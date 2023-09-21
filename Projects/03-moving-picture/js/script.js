@@ -46,7 +46,7 @@ let circle2 = {
 */
 function setup() {
 
-    createCanvas(500, 500);
+    createCanvas(windowLe, 500);
     noStroke();
 
 }

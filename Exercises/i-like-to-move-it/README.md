@@ -1,3 +1,7 @@
-# Template p5 project
+# i-like-to-move-it
+## Luca Sabelli
 
-This is the README file for the entire project. For more official projects you should write information here about the nature of the project, your name, any special explanations of how the project works, etc.
+For this exercise, i made a bunch of objects that would conglomerate together to form a person wearing glasses with a mohawk. 
+I made his mouth size vary depending on the y value of the mouse and the background change color depending on the x and y values of the mouse. 
+
+
