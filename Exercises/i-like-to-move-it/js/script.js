@@ -1,19 +1,9 @@
 /**
- * Title of Project
- * Author Name
+ * i-like-to-move-it
+ * Luca Sabelli
  * 
- * This is a template. You must fill in the title, author, 
- * and this description to match your project!
  */
 
-"use strict";
-
-/**
- * Description of preload
-*/
-function preload() {
-
-}
 //declaring variables that are going to be used 
 let size;
 
@@ -26,7 +16,6 @@ let circle1 = {
     speed: 2,
     fill: 255,
     growth: 1.5,
-  
 };
 
 //this one is the mouth
@@ -37,7 +26,6 @@ let circle2 = {
     speed: -2, 
     fill: 0,
     growth: 0.5,
-  
 };
 
 //this one is the left retina
@@ -48,7 +36,6 @@ let circle3 = {
     speed: 0.5,
     fill: 0,
     growth: 1.5,
-
 };
 
 //this one is the right retina
@@ -59,7 +46,6 @@ let circle4 = {
     speed: -0.5,
     fill: 0,
     growth: 1.5,
-
 };
 
 //this is the left eye
@@ -69,7 +55,6 @@ let rectangle1 = {
     w: 120,
     h: 120,
     speed: 1
-
 };
 
 //this is the right eye
@@ -78,8 +63,7 @@ let rectangle2 = {
     y: 0,
     w: 120,
     h: 120,
-    speed: 1,
-    
+    speed: 1,   
 };
 
 //this is the hair
@@ -91,18 +75,13 @@ let triangle1 = {
     x3: 250,
     y3: 0,
     growth: 1
-
 }
 
 
-/**
- * Description of setup
-*/
 //here we are creating the canvas being used
 function setup() {
 
     createCanvas(500, 500);
-
 
 }
 
@@ -174,7 +153,5 @@ function draw() {
     stroke(0, 0, 0);
     strokeWeight(5);
     line(210, 170, 290, 170);
-
-    
 
 }
