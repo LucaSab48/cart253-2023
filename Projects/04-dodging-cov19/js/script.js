@@ -15,34 +15,56 @@ function preload() {
 
 }
 
+let staticAmount = 1000;
 
-let rectangle = {
-    x: 0, 
-    y: 250, 
+let user = {
+    size: 100,
+    fill: 255
+}
+
+let covid19 = {
+    x: 0,
+    y: 250,
     size: 100,
     vx: 0,
     vy: 0,
-    speed: 2,
-    scale: 1,
-    angle: 0
-}
+    speed: 5,
+    fill: {
+        r: 255,
+        g: 0,
+        b: 0
+    }
+};
 
 function setup() {
-  createCanvas(500, 500);
-  rectangle.vx = rectangle.speed;
+    createCanvas(windowWidth, windowHeight);
+    covid19.y = random(0, height);
+    covid19.vx = covid19.speed;
 }
 
 function draw() {
-  background(0);
-  rectangle.x = rectangle.x + rectangle.vx;
-  rectangle.y += rectangle.vy;
-  rectangle.scale += 0.01;
-  rectangle.angle += 0.05;
-  push();
-  rectMode(CENTER);
-  translate(rectangle.x, rectangle.y);
-  scale(rectangle.scale);
-  rotate(rectangle.angle); 
-  rect(0, 0, rectangle.size, rectangle.size);
-  pop();
+    background(0);
+    for (let i = 0; i < staticAmount; i++) {
+       let posX = random(0, width);
+       let posY = random(0, height);
+       stroke(255);
+       point(posX, posY);
+    }
+    let userX = mouseX;
+    let userY = mouseY;
+    fill(user.fill);
+    ellipse(userX, userY, user.size);
+    covid19.x += covid19.vx;
+    covid19.y += covid19.vy;
+    fill(covid19.fill.r, covid19.fill.g, covid19.fill.b);
+    noStroke();
+    ellipse(covid19.x, covid19.y, covid19.size);
+    if (covid19.x > width) {
+        covid19.x = 0;
+        covid19.y = random(0, height);
+    }
+    let d = dist(userX, userY, covid19.x, covid19.y);
+    if (d < covid19.size / 2 + user.size / 2) {
+        noLoop();
+    }
 }
