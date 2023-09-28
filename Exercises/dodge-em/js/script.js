@@ -33,7 +33,14 @@ let fish = {
 };
 
 
-//In this function, we are creating the canvas for our game and loading the images for the cat and fish.
+//This function allows us to preload our images before our program starts running.
+function preload() {
+    cat.image = loadImage("assets/images/cat1.png");
+    fish.image = loadImage("assets/images/fishbone.png");
+}
+
+
+//In this function, we are creating the canvas for our game.
 function setup() {
     createCanvas(windowWidth, windowHeight);
     
