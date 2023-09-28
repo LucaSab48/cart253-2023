@@ -40,8 +40,8 @@ function setup() {
     //Here, we are setting the initial x position of our fish and assigning the y velocity to it's speed component.
     fish.x = random(0, width);
     fish.vy = fish.speed;
-    cat.image = loadImage("assets/images/cat1.png")
-    fish.image = loadImage("assets/images/fishbone.png")
+    cat.image = loadImage("assets/images/cat1.png");
+    fish.image = loadImage("assets/images/fishbone.png");
     
     //This part is here to stylize the text in the next function.
     textSize(50);
@@ -89,7 +89,7 @@ function draw() {
     if (d < fish.size / 2 + cat.size / 3) {
         fish.y = 0;
         fish.x = random(0, width);
-        count += 1
+        count += 1;
     }
     
     //This "if" statement ends the draw loop and displays a message when the player gets 10 fishes.
@@ -103,8 +103,9 @@ function draw() {
 }
 
 
-//This function allows our code to know when the user moves the cat and sets it's x position to where the mouse is.
-//It returns our active component as true to know when the player is not clicking  
+//This function allows our code to know when the mouse is being moved without any buttons pressed.
+//It returns our active component as true to know when the player is not clicking.
+//This "if" statement also allows our program to reset the cat's active component after each click.  
 function mouseMoved() {
     if (cat.active === false) {
         cat.x = mouseX;
