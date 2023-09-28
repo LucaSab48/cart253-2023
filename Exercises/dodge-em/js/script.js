@@ -104,7 +104,7 @@ function draw() {
 
 
 //This function allows our code to know when the user moves the cat and sets it's x position to where the mouse is.
-//It returns our active component as true to know when the player is done clicking  
+//It returns our active component as true to know when the player is not clicking  
 function mouseMoved() {
     if (cat.active === false) {
         cat.x = mouseX;
