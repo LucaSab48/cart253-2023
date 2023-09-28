@@ -1,157 +1,122 @@
 /**
- * i-like-to-move-it
+ * Cat Game
  * Luca Sabelli
- * 
  */
 
-//declaring variables that are going to be used 
-let size;
 
-//defining our objects that will be used 
-//this one is the face
-let circle1 = {
+//This variable is used to iterate the number of circles we will have in the background.
+let staticAmount = 50;
+
+//This is used to keep track of the number of fishes the cat catches.
+let count = 0;
+
+//This object is our cat that will catch the fish.
+//The active component in the object is to keep track of when the mouse is clicked. 
+let cat = {
+    x: 0,
+    y: 650,
+    size: 200,
+    fill: 255,
+    active: false,
+    image: undefined
+};
+
+//This object is the fish we're catching.
+let fish = {
     x: 0,
     y: 250,
-    size: 100, 
-    speed: 2,
-    fill: 255,
-    growth: 1.5,
+    size: 100,
+    vx: 0,
+    vy: 0,
+    speed: 10,
+    image: undefined
 };
 
-//this one is the mouth
-let circle2 = {
-    x: 500,
-    y: 350,
-    size: 20,
-    speed: -2, 
-    fill: 0,
-    growth: 0.5,
-};
 
-//this one is the left retina
-let circle3 = {
-    x: 0,
-    y: 170,
-    size: 50, 
-    speed: 0.5,
-    fill: 0,
-    growth: 1.5,
-};
-
-//this one is the right retina
-let circle4 = {
-    x: 500,
-    y: 170,
-    size: 50, 
-    speed: -0.5,
-    fill: 0,
-    growth: 1.5,
-};
-
-//this is the left eye
-let rectangle1 = {
-    x: 150, 
-    y: 0, 
-    w: 120,
-    h: 120,
-    speed: 1
-};
-
-//this is the right eye
-let rectangle2 = {
-    x: 350,
-    y: 0,
-    w: 120,
-    h: 120,
-    speed: 1,   
-};
-
-//this is the hair
-let triangle1 = {
-    x1: 110,
-    y1: 0,
-    x2: 390,
-    y2: 0,
-    x3: 250,
-    y3: 0,
-    growth: 1
-}
-
-
-//here we are creating the canvas being used
+//In this function, we are creating the canvas for our game and loading the images for the cat and fish.
 function setup() {
-
-    createCanvas(500, 500);
-
+    createCanvas(windowWidth, windowHeight);
+    
+    //Here, we are setting the initial x position of our fish and assigning the y velocity to it's speed component.
+    fish.x = random(0, width);
+    fish.vy = fish.speed;
+    cat.image = loadImage("assets/images/cat1.png")
+    fish.image = loadImage("assets/images/fishbone.png")
+    
+    //This part is here to stylize the text in the next function.
+    textSize(50);
+    textAlign(CENTER, CENTER);
+    
 }
 
 
-/**
-  This creates my guy's face, and it's movement and growth path's for all the objects inside
-*/
+//In the draw function, we have the meat of our code.
+//We initially set the background color, then we add all the movement and images.
 function draw() {
+    background(70, 150, 100);
     
-    //this is to just ensure that no shape has a stroke unintentionally
-    noStroke();
+    //This section draws the score board in the top right section of our canvas.
+    fill(0);
+    text(count, 1400, 30);
+    text("score:", 1300, 30);
     
-    //here we are defining and mapping variables for the background color
-    let x1 = map(mouseX, 0, width, 0, 255);
-    let y1 = map(mouseY, 0, height, 0, 255);
-    background(x1, 50, y1);
-
-    //here we are creating the face of the final product as well as its movement path using constrain
-    fill(circle1.fill);
-    ellipse(circle1.x, circle1.y, circle1.size);
-    circle1.x = circle1.x + circle1.speed;
-    circle1.x = constrain(circle1.x, 0, 250);
-    circle1.size += circle1.growth;
-    circle1.size = constrain(circle1.size, 100, 450);
-
-    //we are defining and mapping another variable to control the growth of the mouth 
-    let y2 = map(mouseY, 0, width, 0, 200);
-    size = constrain(y2, 20, 200);
-    //now we are creating the mouth itself 
-    fill(circle2.fill);
-    ellipse(circle2.x, circle2.y, size);
-    circle2.x = circle2.x + circle2.speed;
-    circle2.x = constrain(circle2.x, 250, 500);
-
-    //this section creates the left eye of the guy's glasses and its movement path 
-    //I added a random number generator for his shades to add a sort of reflection   
-    fill(0, random(230, 255), 0);
-    rectMode(CENTER);
-    rect(rectangle1.x, rectangle1.y, rectangle1.w, rectangle1.h);
-    rectangle1.y += rectangle1.speed;
-    rectangle1.y = constrain(rectangle1.y, 0, 170);
-
-    //this part makes the right eye of the glasses and its movement path
-    fill(0, random(230, 255), 0);
-    rectMode(CENTER);
-    rect(rectangle2.x, rectangle2.y, rectangle2.w, rectangle2.h);
-    rectangle2.y += rectangle2.speed;
-    rectangle2.y = constrain(rectangle2.y, 0, 170);
-
-    //now we are creating the left retina and its movement as well
-    fill(circle3.fill);
-    ellipse(circle3.x, circle3.y, circle3.size);
-    circle3.x = circle3.x + circle3.speed;
-    circle3.x = constrain(circle3.x, 0, 150);
-
-    //here we are making the right retina and its movement
-    fill(circle4.fill);
-    ellipse(circle4.x, circle4.y, circle4.size);
-    circle4.x = circle4.x + circle4.speed;
-    circle4.x = constrain(circle4.x, 350, 500);
-
-    //this part creates his hair and its growth path
-    fill(255, 0, 0);
-    triangle(triangle1.x1, triangle1.y1, triangle1.x2, triangle1.y2, triangle1.x3, triangle1.y3);
-    triangle1.y3 += triangle1.growth;
-    triangle1.y3 = constrain(triangle1.y3, 0, 150);
+    //This "for" loop is to create th circles in the background of our game.  
+    for (let i = 0; i < staticAmount; i++) {
+       let posX = random(0, width);
+       let posY = random(0, height);
+       let size1 = random(0, 20);
+       fill(random(0, 255), random(0, 255), random(0, 255));
+       noStroke();
+       ellipse(posX, posY, size1);
+    }
     
-    //finally, we are making the connection between the eyes for the man's glasses
-    stroke(0, 0, 0);
-    strokeWeight(5);
-    line(210, 170, 290, 170);
+    //This section is to insert our cat and fish images as well as giving the fish it's movement.
+    imageMode(CENTER);
+    image(cat.image, cat.x, cat.y, cat.size, cat.size);
+    fish.x += fish.vx;
+    fish.y += fish.vy;
+    image(fish.image, fish.x, fish.y, fish.size, fish.size);
+    
+    //This "for" loop is to reset the fish after it has reached the end of the canvas.
+    if (fish.y > height) {
+        fish.y = 0;
+        fish.x = random(0, width);
+    }
+    
+    //This section of code allows our cat to catch the fish and add it to the scoreboard. 
+    //It also resets the fishes position when it touches the cat so that it will only count it 1 time.
+    let d = dist(cat.x, cat.y, fish.x, fish.y);
+    if (d < fish.size / 2 + cat.size / 3) {
+        fish.y = 0;
+        fish.x = random(0, width);
+        count += 1
+    }
+    
+    //This "if" statement ends the draw loop and displays a message when the player gets 10 fishes.
+    //The winning text will be a random color.   
+    if (count === 10) {
+        textSize(80);
+        fill(random(0, 255), random(0, 255), random(0, 255));
+        text("YOU WIN!!!", 750, 350);
+        noLoop();
+    }
+}
 
+
+//This function allows our code to know when the user moves the cat and sets it's x position to where the mouse is.
+//It returns our active component as true to know when the player is done clicking  
+function mouseMoved() {
+    if (cat.active === false) {
+        cat.x = mouseX;
+        cat.y = 650;
+        cat.active = true;
+    }
+}
+
+
+//This function allows the code to know when the user clicks the mouse. 
+//It then sets the x position of the cat to the mouse position and the y position stays fixed. 
+function mouseClicked() {
+    cat.x = mouseX;
+    cat.y = 650;
 }
