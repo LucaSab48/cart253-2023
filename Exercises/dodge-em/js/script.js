@@ -109,7 +109,6 @@ function draw() {
 function mouseMoved() {
     if (cat.active === false) {
         cat.x = mouseX;
-        cat.y = 650;
         cat.active = true;
     }
 }
