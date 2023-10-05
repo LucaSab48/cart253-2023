@@ -166,9 +166,9 @@ function checkOffScreen() {
 //I added no stroke so the line of squares would be seamless. 
 function display() {
     noStroke();
-    fill(255);
-    ellipse(user.x, user.y, user.size);
     fill(0, 255, 0);
+    ellipse(user.x, user.y, user.size);
+    fill(255);
     ellipse(heart.x, heart.y, heart.size);
     fill(255, 0, 0);
     ellipse(hazard1.x, hazard1.y, hazard1.size);
