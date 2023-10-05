@@ -1,33 +1,33 @@
 /**
- * Title of Project
- * Author Name
+ * Love, Actually
+ * Luca Sabelli
  * 
- * This is a template. You must fill in the title, author, 
- * and this description to match your project!
  */
 
-function preload() {
 
-}
-
+//This variable is to determine what state the game is currently in.
+//I am starting it in the title state so the game initiates with the title.
 let state = "title";
 
+//Here we have the user object.
 let user = {
     x: 640,
     y: 640,
     size: 100,
     vx: 0,
     vy: 0,
-    speed: 5
+    speed: 5,
 };
 
+//Here is our heart object, where the user wants to get to.
 let heart = {
     x: 1280,
     y: 640,
     size: 100,
-    dragging: false
+    dragging: false,
 };
 
+//Here is our first hazard object, the red circle that goes across the middle of the screen.
 let hazard1 = {
     x: 700, 
     y: 0,
@@ -35,63 +35,63 @@ let hazard1 = {
     vx: 0,
     vy: 0,
     speed: 5 
-}
+};
 
+//Over here is our block to the heart.
+//I had to separate the long rectangle into multiple squares so that the program can register when the user or heart collides with it.
+//They are all immediately next to each other so it looks continuous. 
 let hazard2 = {
     x: 900,
     y: 500,
     width: 100,
     height: 100
-}
+};
 
 let hazard3 = {
     x: 1000,
     y: 500,
     width: 100,
     height: 100
-}
+};
 
 let hazard4 = {
     x: 1100,
     y: 500,
     width: 100,
     height: 100
-}
+};
 
 let hazard5 = {
     x: 1200,
     y: 500,
     width: 100,
     height: 100
-}
+};
 
 let hazard6 = {
     x: 1300,
     y: 500,
     width: 100,
     height: 100
-}
+};
 
 let hazard7 = {
     x: 1400,
     y: 500,
     width: 100,
     height: 100
-}
+};
 
 
-
-
-
-
-
-
+//In the setup, i am creating a canvas and setting the y-axis velocity of the red circle to its speed component.
 function setup() {
     createCanvas(windowWidth, windowHeight);
     hazard1.vy = hazard1.speed;
 }
 
 
+//In the draw function, I am switching the states of the game.
+//I am also inserting the movement for the user circle and setting the background color. 
 function draw() {
     background(0);
     if (state === "title") {
@@ -118,6 +118,7 @@ function draw() {
 }
 
 
+//This function is dedicated to the movement of our objects. 
 function move() {
     user.x += user.vx;
     user.y += user.vy;
@@ -125,8 +126,10 @@ function move() {
 }
 
 
+//This function is checking if any of our objects get off the screen.
 function checkOffScreen() {
 
+    //This if statement checks if the user veers off the canvas and sends him to the other side.
     if(user.x < 0) {
         user.x = width;  
     }
@@ -141,14 +144,17 @@ function checkOffScreen() {
         user.y = 0;
     }
 
+    //This if statement checks if the heart is off the canvas, in which case the game ends and you get the sad ending.
     if(heart.x < 0 || heart.x > width || heart.y < 0 || heart.y > height) {
         state = "sad";
     }
 
+    //This statement resets the position of the red circle after it goes past the canvas.
     if(hazard1.y > height) {
         hazard1.y = 0;
     }
 
+    //This is my secret ending to the game, where if the player drags the heart high up, a message appears.
     if(heart.y < 100) {
         state = "secret";
     }
@@ -156,10 +162,13 @@ function checkOffScreen() {
 }
 
 
+//This function displays all my objects on the canvas as well as filling their color. 
+//I added no stroke so the line of squares would be seamless. 
 function display() {
     noStroke();
     fill(255);
     ellipse(user.x, user.y, user.size);
+    fill(0, 255, 0);
     ellipse(heart.x, heart.y, heart.size);
     fill(255, 0, 0);
     ellipse(hazard1.x, hazard1.y, hazard1.size);
@@ -173,17 +182,24 @@ function display() {
 }
 
 
+// This function verifies if the user or heart are overlapping with each other or any other object.
+// Depending on which objects are overlapping, the if statements will change the state of the game. 
 function checkOverlap() {
+    
+    //Here we are checking if the user and heart have touched and the player gets the love ending.
     let d = dist(user.x, user.y, heart.x, heart.y);
     if(d < user.size / 2 + heart.size / 2) {
         state = "love";
     }
     
+    //Here is our red circle, if touched the player gets the sad ending. 
     let d1 = dist(user.x, user.y, hazard1.x, hazard1.y);
     if(d1 < user.size / 2 + hazard1.size / 2) {
         state = "sad";
     }
 
+    //Over here is the long section of checking each individual square to see if the user or heart are touching it.
+    //If either are touching the square, the player will get the sad ending. 
     let d2 = dist(heart.x, heart.y, hazard1.x, hazard1.y);
     if(d2 < heart.size / 2 + hazard1.size / 2) {
         state = "sad";
@@ -251,7 +267,9 @@ function checkOverlap() {
 
 }
 
-
+//This is the games main state.
+//It calls upon a few of our other functions.
+//This initiates after the title state.
 function simulation() {
     move();
     display();
@@ -260,6 +278,8 @@ function simulation() {
 }
 
 
+//This function is the beginning to the game.
+//It displays a message and is the initial state of my game. 
 function title() {
     textAlign(CENTER, CENTER);
     textSize(50);
@@ -268,6 +288,8 @@ function title() {
 }
 
 
+//This function is our love ending.
+//It will display a message if the player wins by touching the user and the heart.
 function love() {
     textAlign(CENTER, CENTER);
     textSize(70);
@@ -276,6 +298,8 @@ function love() {
 }
 
 
+//This is the sad ending to the game.
+//It will initiate if the player touches any hazard object or if he drags the heart outside of the canvas. 
 function sad() {
     textAlign(CENTER, CENTER);
     textSize(50);
@@ -283,7 +307,8 @@ function sad() {
     text("i guess we all die alone", width/2, height/2);
 }
 
-
+//This is our secret ending to the game.
+//It will display a funny message if the player discovers the secret. 
 function secret() {
     textAlign(CENTER, CENTER);
     textSize(70);
@@ -292,18 +317,23 @@ function secret() {
 }
 
 
+//This function allows the player to initiate the simulation state after the title screen.
+//Any key he presses will work.
 function keyPressed() {
     if (state === "title") {
         state = "simulation";
     }
 }
 
-
+//This function determines the user's controls for the x-axis.
+//It is the A key and the D key to move left and right.
 function xControls() {
+    //This is the A key  
     if(keyIsDown(65)) {
         user.vx = -user.speed;
     }
 
+    //This is the D key
     else if (keyIsDown(68)) {
         user.vx = user.speed;
     }
@@ -314,11 +344,15 @@ function xControls() {
 }
 
 
+//This function determines the users controls for the y-axis.
+//The key W is up and S is down.
 function yControls() {
+    //This is W  
     if (keyIsDown(87)) {
         user.vy = -user.speed;
     }
 
+    //This is S
     else if (keyIsDown(83)) {
         user.vy = user.speed;
     }
@@ -328,17 +362,25 @@ function yControls() {
     }
 }
 
+
+//This function is the movement for the heart.
 function mousePressed() {
     let d = dist(mouseX, mouseY, heart.x, heart.y);
+    
+    //This if statement is to let the program know when you press the mouse.
     if(d < heart.size / 2) {
         heart.dragging = true;
     }
 }
 
+
+//This function is to know when the player is releasing the click button on the heart.
 function mouseReleased() {
     heart.dragging = false;
 }
 
+
+//This function determines the position of the mouse while dragging the heart object. 
 function mouseDragged() {
     if(heart.dragging) {
         heart.x = mouseX;
