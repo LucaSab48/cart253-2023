@@ -12,7 +12,7 @@ function preload() {
 
 let state = "title";
 
-let circle1 = {
+let user = {
     x: 640,
     y: 640,
     size: 100,
@@ -21,23 +21,74 @@ let circle1 = {
     speed: 5
 };
 
-let circle2 = {
+let heart = {
     x: 1280,
     y: 640,
     size: 100,
+    dragging: false
+};
+
+let hazard1 = {
+    x: 700, 
+    y: 0,
+    size: 200, 
     vx: 0,
     vy: 0,
-    speed: 5
-};
+    speed: 5 
+}
+
+let hazard2 = {
+    x: 900,
+    y: 500,
+    width: 100,
+    height: 100
+}
+
+let hazard3 = {
+    x: 1000,
+    y: 500,
+    width: 100,
+    height: 100
+}
+
+let hazard4 = {
+    x: 1100,
+    y: 500,
+    width: 100,
+    height: 100
+}
+
+let hazard5 = {
+    x: 1200,
+    y: 500,
+    width: 100,
+    height: 100
+}
+
+let hazard6 = {
+    x: 1300,
+    y: 500,
+    width: 100,
+    height: 100
+}
+
+let hazard7 = {
+    x: 1400,
+    y: 500,
+    width: 100,
+    height: 100
+}
+
+
+
+
+
+
 
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    circle1.vx = random(-circle1.speed, circle1.speed);
-    circle1.vy = random(-circle1.speed, circle1.speed);
-    circle2.vx = random(-circle2.speed, circle2.speed);
-    circle2.vy = random(-circle2.speed, circle2.speed);
-   
+    hazard1.vy = hazard1.speed;
 }
 
 
@@ -55,38 +106,87 @@ function draw() {
     else if (state === "sad") {
         sad();
     }
+    else if (state === "secret") {
+        secret();
+    }
+
+    
+    xControls();
+    yControls();
+
+
 }
 
 
 function move() {
-    circle1.x += circle1.vx;
-    circle1.y += circle1.vy;
-    circle2.x += circle2.vx;
-    circle2.y += circle2.vy; 
+    user.x += user.vx;
+    user.y += user.vy;
+    hazard1.y += hazard1.vy; 
 }
 
 
 function checkOffScreen() {
-    if(circle1.x < 0 || circle1.x > width || circle1.y < 0 || circle1.y > height) {
+
+    if(user.x < 0) {
+        user.x = width;  
+    }
+    else if(user.x > width) {
+        user.x = 0;
+    }
+
+    if(user.y < 0) {
+        user.y = height;
+    }
+    else if(user.y > height) {
+        user.y = 0;
+    }
+
+    if(heart.x < 0 || heart.x > width || heart.y < 0 || heart.y > height) {
         state = "sad";
     }
-    if(circle2.x < 0 || circle2.x > width || circle2.y < 0 || circle2.y > height) {
-        state = "sad";
+
+    if(hazard1.y > height) {
+        hazard1.y = 0;
     }
+
+    if(heart.y < 100) {
+        state = "secret";
+    }
+
 }
 
 
 function display() {
+    noStroke();
     fill(255);
-    ellipse(circle1.x, circle1.y, circle1.size);
-    ellipse(circle2.x, circle2.y, circle2.size);
+    ellipse(user.x, user.y, user.size);
+    ellipse(heart.x, heart.y, heart.size);
+    fill(255, 0, 0);
+    ellipse(hazard1.x, hazard1.y, hazard1.size);
+    rectMode(CENTER);
+    rect(hazard2.x, hazard2.y, hazard2.width, hazard2.height);
+    rect(hazard3.x, hazard3.y, hazard3.width, hazard3.height);
+    rect(hazard4.x, hazard4.y, hazard4.width, hazard4.height);
+    rect(hazard5.x, hazard5.y, hazard5.width, hazard5.height);
+    rect(hazard6.x, hazard6.y, hazard6.width, hazard6.height);
+    rect(hazard7.x, hazard7.y, hazard7.width, hazard7.height);
 }
 
 
 function checkOverlap() {
-    let d = dist(circle1.x, circle1.y, circle2.x, circle2.y);
-    if(d < circle1.size / 2 + circle2.size / 2) {
+    let d = dist(user.x, user.y, heart.x, heart.y);
+    if(d < user.size / 2 + heart.size / 2) {
         state = "love";
+    }
+    
+    let d1 = dist(user.x, user.y, hazard1.x, hazard1.y);
+    if(d1 < user.size / 2 + hazard1.size / 2) {
+        state = "sad";
+    }
+
+    let d2 = dist(heart.x, heart.y, hazard1.x, hazard1.y);
+    if(d2 < heart.size / 2 + hazard1.size / 2) {
+        state = "sad";
     }
 }
 
@@ -123,10 +223,68 @@ function sad() {
 }
 
 
-function mousePressed() {
+function secret() {
+    textAlign(CENTER, CENTER);
+    textSize(70);
+    fill(0, 255, 0);
+    text("ERROR 404: love not found :(", width/2, height/2);
+}
+
+
+function keyPressed() {
     if (state === "title") {
         state = "simulation";
     }
 }
+
+
+function xControls() {
+    if(keyIsDown(65)) {
+        user.vx = -user.speed;
+    }
+
+    else if (keyIsDown(68)) {
+        user.vx = user.speed;
+    }
+
+    else {
+        user.vx = 0;
+    }   
+}
+
+
+function yControls() {
+    if (keyIsDown(87)) {
+        user.vy = -user.speed;
+    }
+
+    else if (keyIsDown(83)) {
+        user.vy = user.speed;
+    }
+
+    else {
+        user.vy = 0;
+    }
+}
+
+function mousePressed() {
+    let d = dist(mouseX, mouseY, heart.x, heart.y);
+    if(d < heart.size / 2) {
+        heart.dragging = true;
+    }
+}
+
+function mouseReleased() {
+    heart.dragging = false;
+}
+
+function mouseDragged() {
+    if(heart.dragging) {
+        heart.x = mouseX;
+        heart.y = mouseY;
+    }
+}
+
+
 
 
