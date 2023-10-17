@@ -14,6 +14,7 @@ let triangles = [];
 let rectangles = [];
 let circles = [];
 
+//Here I am declaring a variable that will be used for the increase/decrease of size
 let amount;
 
 //The endPhrases array stores multiple strings that are the options for our message variable.
@@ -47,7 +48,15 @@ let ogPosYRectangle;
 let ogPosXTriangle;
 let ogPosYTriangle;
 
+//This variable will be our background image.
 let bg = undefined;
+
+//This variable will be the font we use.
+let creepFont = undefined;
+
+//This variable will be a sound effect that will play for our secret ending
+let evilLaugh = undefined;
+
 //Here we have the user object.
 //The increment properties determine the rate of increase in size for each object.
 //The shape property allows the program to track which shape the user is currently using. 
@@ -85,6 +94,7 @@ let pumpkinLid = {
 };
 
 //This object is the candle that falls into the pumpkin after the user drags the pumpkin lid away.
+//It has a vy component because it will have motion in the y direction.
 let candle = {
     x: 768,
     y: 0,
@@ -151,13 +161,15 @@ let rec1 = {
 };
 
 
-//This function preloads all the images and sounds used in the program.
+//This function preloads all the images, fonts and sounds used in the program.
 function preload () {
     pumpkinBody.img = loadImage("assets/images/images/pumpkin5_02.png");
     pumpkinLid.img = loadImage("assets/images/pumpkin4_01.png");
     candle.img = loadImage("assets/images/candle.png");
     mouse.img = loadImage("assets/images/knife3.png");
     bg = loadImage("assets/images/background4.1.png");
+    creepFont = loadFont("assets/Fonts/Creepster-Regular.ttf");
+    evilLaugh = loadSound("assets/sounds/Evil Laugh Sound Effect.mp3")
 }
 
 
@@ -315,15 +327,17 @@ function simulation() {
     returningLid();
     lidReturns();
     rotateShape();
+    secretEnding();
     nowThisIsTheEnd();
 }
 
 
 //This function displays the initial message at the start of our game when the program's state is title. 
 function title() {
-    textAlign(CENTER, CENTER);
-    textSize(50);
     fill(0);
+    textAlign(CENTER, CENTER);
+    textFont(creepFont);
+    textSize(100);
     text("Pumpkin Carving Simulator", width/2, height/2);
 }
 
@@ -342,19 +356,27 @@ function end() {
 //This function displays the ending message of our game when called upon. 
 //It also selects the font used and displays the random end phrase. 
 function displayEnding() {
+    fill(255, 50, 180);
+    textFont(creepFont);
     textAlign(CENTER, CENTER);
-    textSize(50);
-    fill(255);
-    text(message, width/2, height/2);
+    textSize(100);
+    text(message, width/2, 460);
 }
 
 
-//bla bla bla
+//This function will start if the user discovers the hidden ending in the game.
+//It will print out a message and play an audio file trying to scare the player.
+//The noLoop function is there to prevent the audio file from repeating itself.
 function secret() {
     textAlign(CENTER, CENTER);
-    textSize(70);
-    fill(0, 255, 0);
-    text("ERROR 404: love not found :(", width/2, height/2);
+    textSize(100);
+    textFont(creepFont);
+    fill(255, 0, 0);
+    text("WELCOME", width/2, 300);
+    text("TO", width/2, 400);
+    text("HELL", width/2, 500);
+    evilLaugh.play();
+    noLoop();
 }
 
 
@@ -740,7 +762,16 @@ function lidReturns() {
 //It is also named after an Adele line in her song Skyfall.
 function nowThisIsTheEnd() {
     //This if statement changes the state of the game when the candle's y position is further than 500 pixels and the pumpkin lid is done returning. 
-    if(candle.y > 500 && pumpkinLid.returning === false) {
+    if(candle.y > 300 && pumpkinLid.returning === false) {
         state = 'end';
+    }
+}
+
+
+//This function changes the state to secret if the player unlocks the secret ending.
+function secretEnding() {
+    //To get the secret ending, the user must make 6 copies of each shape as described in the if statement. 
+    if(circles.length === 6 && rectangles.length === 6 && triangles.length === 6) {
+        state = "secret";
     }
 }
