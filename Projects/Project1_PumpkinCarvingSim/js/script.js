@@ -98,7 +98,7 @@ let pumpkinLid = {
 let candle = {
     x: 768,
     y: 0,
-    vy: 1,
+    vy: 2,
     width: 200,
     height: 200,
     img: undefined,
@@ -360,7 +360,7 @@ function displayEnding() {
     textFont(creepFont);
     textAlign(CENTER, CENTER);
     textSize(100);
-    text(message, width/2, 460);
+    text(message, width/2, 420);
 }
 
 
@@ -504,7 +504,7 @@ function mouseSelected() {
 function sizeInc() {
     //This if statement lets the program know when the up arrow key is selected, then increases the size of the objects. 
     if(keyIsDown(UP_ARROW)) {
-        amount = 1;
+        amount = 2;
         user.inc += amount;
     }
     else {
@@ -513,7 +513,7 @@ function sizeInc() {
 
     //This if statement lets the program know when the down arrow key is selected, then decreases the size of the objects. 
     if(keyIsDown(DOWN_ARROW)) {
-        amount = 1;
+        amount = 2;
         user.inc += -amount;
     }
     else {
@@ -526,7 +526,7 @@ function sizeInc() {
 function sizeInc2() {
     //This if statement lets our program know when the user hits the right arrow key, then increases the width. 
     if(keyIsDown(RIGHT_ARROW)) {
-        amount = 3;
+        amount = 2;
         user.inc2 += amount;
     }
     else {
@@ -535,7 +535,7 @@ function sizeInc2() {
 
     //This if statement lets the program know when the user hits the left arrow key, then decreases the width of our objects.
     if(keyIsDown(LEFT_ARROW)) {
-        amount = 3;
+        amount = 2;
         user.inc2 += -amount;
     }
     else {
@@ -549,13 +549,13 @@ function rotateShape() {
     //This if statement allows the program to know when the user hits the S key to rotate the selected shapes.
     if(keyIsDown(83)) {
         if(user.shape === "circle") {
-            cir1.angle += radians(1);
+            cir1.angle += radians(2);
         }
         if(user.shape === "rectangle") {
-            rec1.angle += radians(1);
+            rec1.angle += radians(2);
         }
         if(user.shape === "triangle") {
-            tri1.angle += radians(1);
+            tri1.angle += radians(2);
         }
     }
 
