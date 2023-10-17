@@ -11,36 +11,31 @@
 /**
  * Description of preload
 */
-function preload() {
+let triangleX, triangleY;
+let isStaying = false;
 
-}
-
-let backgroundShade = 0;
-
-let circle = {
-    x: 250,
-    y: 0,
-    size: 100, 
-    speed: 5,
-    fill: 255
-};
-
-/**
- * Description of setup
-*/
 function setup() {
-
-    createCanvas(500, 500);
-
+  createCanvas(400, 400);
+  triangleX = width / 2;
+  triangleY = height / 2;
+  noStroke();
+  fill(255, 0, 0);
+  triangle(triangleX, triangleY - 20, triangleX - 20, triangleY + 20, triangleX + 20, triangleY + 20);
 }
 
-
-/**
- * Description of draw()
-*/
 function draw() {
-background(backgroundShade);
-ellipse(circle.x, circle.y, circle.size);
-circle.y += circle.speed;
-circle.y = constrain(circle.y, 0, 400);
+  background(220);
+  if (!isStaying) {
+    // Make the triangle follow the mouse
+    triangleX = mouseX;
+    triangleY = mouseY;
+  }
+  // Draw the triangle
+  fill(255, 0, 0);
+  triangle(triangleX, triangleY - 20, triangleX - 20, triangleY + 20, triangleX + 20, triangleY + 20);
+}
+
+function mousePressed() {
+  // Toggle the isStaying flag on mouse click
+  isStaying = !isStaying;
 }

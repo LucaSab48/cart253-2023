@@ -1,24 +1,80 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0>
 
-    <title>CHANGE THIS TITLE IN INDEX.HTML!</title>
+    <title>CHANGE THIS TITLE IN INDEX.HTML!</title> -->
 
     <!-- CSS stylesheet(s) -->
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="css/style.css" /> -->
 
     <!-- Library script(s) -->
-    <script src="js/libraries/p5.min.js"></script>
-    <script src="js/libraries/p5.sound.min.js"></script>
+    <!-- <script src="js/libraries/p5.min.js"></script>
+    <script src="js/libraries/p5.sound.min.js"></script> -->
 
     <!-- My script(s) -->
-    <script src="js/script.js"></script>
-  </head>
+    <!-- <script src="js/script.js"></script>
+  </head> -->
 
-  <body>
+  <!-- <body> -->
     <!-- HTML would go here if needed. -->
-  </body>
+  <!-- </body>
 
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+  <script>
+    let canvas;
+    let img;
+    let carvingTool = 10;
+
+    function setup() {
+      canvas = createCanvas(400, 400);
+      canvas.parent('pumpkin-container');
+      img = createImage(width, height);
+      img.loadPixels();
+      background(255);
+    }
+
+    function draw() {
+      if (mouseIsPressed) {
+        img.set(mouseX, mouseY, color(0));
+        img.updatePixels();
+        stroke(0);
+        strokeWeight(carvingTool);
+        point(mouseX, mouseY);
+      }
+      image(img, 0, 0, width, height);
+    }
+
+    function keyPressed() {
+      if (key === 'C') {
+        clearCanvas();
+      }
+    }
+
+    function clearCanvas() {
+      background(255);
+      img = createImage(width, height);
+      img.loadPixels();
+    }
+
+    function changeToolSize(value) {
+      carvingTool = value;
+    }
+  </script>
+  <div id="pumpkin-container">
+    <h2>Pumpkin Carving Simulator</h2>
+    <p>Click and drag to carve the pumpkin. Press 'C' to clear the canvas.</p>
+    <input type="range" min="1" max="50" value="10" id="tool-size" onchange="changeToolSize(this.value)">
+    <label for="tool-size">Carving Tool Size</label>
+  </div>
+</body>
 </html>
+
