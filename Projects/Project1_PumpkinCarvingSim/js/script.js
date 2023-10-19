@@ -66,8 +66,8 @@ let user = {
     width: 16,
     height: 16,
     speed: 5,
-    inc: 10,
-    inc2: 10,
+    inc: 12,
+    inc2: 12,
     shape: undefined,
 };
 
@@ -272,7 +272,7 @@ function doubleClicked() {
     for (let i = 0; i < rectangles.length; i++) {
         let rectCopy = rectangles[i]
         let d = dist(mouseX, mouseY, rectCopy.x, rectCopy.y)
-        if((d <= abs(rectCopy.rectInc) / 1.5 || d <= abs(rectCopy.rectInc2) / 2) && user.shape === "mouse") {
+        if((d <= abs(rectCopy.rectInc) || d <= abs(rectCopy.rectInc2)) && user.shape === "mouse") {
             rectangles.splice(i, 1);
             break;
         }
@@ -280,7 +280,7 @@ function doubleClicked() {
     for (let i = 0; i < circles.length; i++) {
         let cirCopy = circles[i]
         let d = dist(mouseX, mouseY, cirCopy.x, cirCopy.y)
-        if((d <= abs(cirCopy.cirInc) / 1.5 || d <= abs(cirCopy.cirInc2) / 2) && user.shape === "mouse") {
+        if((d <= abs(cirCopy.cirInc) || d <= abs(cirCopy.cirInc2)) && user.shape === "mouse") {
             circles.splice(i, 1);
             break;
         }
