@@ -22,7 +22,7 @@ let amount;
 let message;
 let endPhrases = [
     "SPOOKTASTIC",
-    "Help, I'm stuck in this pumpkin!",
+    "I did not ask to be made",
     "Oh my gourd!",
     "Cutest pumpkin in the patch :)",
     "Creeping it real",
@@ -178,6 +178,8 @@ function preload () {
 //I am setting the message variable to store a random end phrase as well.
 function setup() {
     createCanvas(windowWidth, windowHeight);
+    pumpkinLid.x = width/2;
+    pumpkinBody.x = width/2;
     originalPosition = createVector(pumpkinLid.x, pumpkinLid.y);
     ogPosXCircle = cir1.x;
     ogPosYCircle = cir1.y; 
@@ -270,7 +272,7 @@ function doubleClicked() {
     for (let i = 0; i < rectangles.length; i++) {
         let rectCopy = rectangles[i]
         let d = dist(mouseX, mouseY, rectCopy.x, rectCopy.y)
-        if((d <= abs(rectCopy.rectInc) / 1.5 || d <= abs(rectCopy.rectInc2) / 1.5) && user.shape === "mouse") {
+        if((d <= abs(rectCopy.rectInc) / 1.5 || d <= abs(rectCopy.rectInc2) / 2) && user.shape === "mouse") {
             rectangles.splice(i, 1);
             break;
         }
@@ -278,14 +280,14 @@ function doubleClicked() {
     for (let i = 0; i < circles.length; i++) {
         let cirCopy = circles[i]
         let d = dist(mouseX, mouseY, cirCopy.x, cirCopy.y)
-        if((d <= abs(cirCopy.cirInc) / 1.5 || d <= abs(cirCopy.cirInc2) / 1.5) && user.shape === "mouse") {
+        if((d <= abs(cirCopy.cirInc) / 1.5 || d <= abs(cirCopy.cirInc2) / 2) && user.shape === "mouse") {
             circles.splice(i, 1);
             break;
         }
     }
 }
 
-//This function determines the background color.
+//This function determines the background image.
 //I made it its own function so i can determine the layering more precisely in the simulation and in the ending.
 function backgroundColor() {
     imageMode(CENTER);
