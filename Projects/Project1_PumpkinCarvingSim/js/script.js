@@ -385,7 +385,7 @@ function secret() {
 //This function allows our program to know when any key is pressed.
 function keyPressed() {
     //This if statement allows the user to hit any key to change the state of the game from title to simulation.
-    if(state === "title") {
+    if(state === "title" && keyCode != ENTER) {
         state = "simulation";
     }
 
