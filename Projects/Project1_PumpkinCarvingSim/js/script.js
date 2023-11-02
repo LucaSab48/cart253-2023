@@ -177,7 +177,7 @@ function preload () {
 //I am also setting the variables to store the original position of the pumpkin lid and all the shape objects.
 //I am setting the message variable to store a random end phrase as well.
 function setup() {
-    createCanvas(windowWidth, windowHeight);
+    createCanvas(1400, 700);
     pumpkinLid.x = width/2;
     pumpkinBody.x = width/2;
     originalPosition = createVector(pumpkinLid.x, pumpkinLid.y);
@@ -722,7 +722,7 @@ function displayRectCopies(rectCopy) {
 function displayCandle() {
     //This if statement allows the candle to display, then start falling when the user moves the lid out of the way and releases the lid.
     //It also constrains the candles movement to not go past the pumpkin body. 
-    if((abs(pumpkinLid.x) < 700 || abs(pumpkinLid.x) > 800) && !pumpkinLid.dragging) {
+    if((abs(pumpkinLid.x) < 700 || abs(pumpkinLid.x) > 800) && !pumpkinLid.dragging && ending) {
         image(candle.img, candle.x, candle.y, candle.width, candle.height);
         candle.y += candle.vy;
         candle.y = constrain(candle.y, 0, 600);
