@@ -764,7 +764,7 @@ function lidReturns() {
 //It is also named after an Adele line in her song Skyfall.
 function nowThisIsTheEnd() {
     //This if statement changes the state of the game when the candle's y position is further than 500 pixels and the pumpkin lid is done returning. 
-    if(candle.y > 300 && pumpkinLid.returning === false) {
+    if(candle.y > 300 && pumpkinLid.returning === false && ending) {
         state = 'end';
     }
 }
