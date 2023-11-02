@@ -3,7 +3,7 @@ class Paddle {
         this.width = w;
         this.height = h;
         this.x;
-        this.y = height - this.height / 2;
+        this.y = (height - 150) - this.height / 2;
     }
 
     move() {

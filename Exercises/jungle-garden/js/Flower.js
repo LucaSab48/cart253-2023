@@ -30,7 +30,7 @@ class Flower {
     // Shrinks the flower
     shrink() {
       // Choose a random amount to shrink
-      let shrinkage = random(0, 0.1);
+      let shrinkage = 1;
       // Reduce the petal thickness (divide by 10 to make it less rapid)
       this.petalThickness = this.petalThickness - shrinkage / 10;
       // Reduce the centre of the flower

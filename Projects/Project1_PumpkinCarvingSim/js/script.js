@@ -96,7 +96,7 @@ let pumpkinLid = {
 //This object is the candle that falls into the pumpkin after the user drags the pumpkin lid away.
 //It has a vy component because it will have motion in the y direction.
 let candle = {
-    x: 768,
+    x: 700,
     y: 0,
     vy: 2,
     width: 200,
