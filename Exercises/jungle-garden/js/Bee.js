@@ -1,93 +1,83 @@
+//This class creates our bee objects
 class Bee {
-
+    //The constructor here is setting all the bee properties
     constructor(x, y) {
       this.x = x;
       this.y = y;
       this.size = 40;
-      this.minSize = 10; // If we get smaller than this minimum we're dead
-      this.maxSize = 40; // We can't get bigger than this
+      this.minSize = 10; //This is the minimum  size for death
+      this.maxSize = 40; //This is the maximum size
       this.vx = 0;
       this.vy = 0;
       this.speed = 5;
-      this.growRate = 0.2; // How much the bee grows if it pollinates
-      this.shrinkRate = 0.025; // How much smaller we get each frame
-      this.jitteriness = 0.1; // How likely the bee is to change direction
-      this.alive = true; // The Bee starts out alive!
+      this.growRate = 0.2; //This is how much the bee grows if it pollinates
+      this.shrinkRate = 0.03; //How much smaller the bee shrinks each frame 
+      this.jitteriness = 0.1; //How likely the bee will change direction
+      this.alive = true; //If the bee is alive or not
     }
   
-    // shrink() causes the bee to get smaller over time
+    //This function shrinks our bees over time
     shrink() {
-      // Shrink by reducing the size by a set amount
+      //This part shrinks the bees by our set amount
       this.size = this.size - this.shrinkRate;
-      // Check if we're smaller than the minimum size
+      //Checks if the bee has reached min size for death
       if (this.size < this.minSize) {
-        // If so, we're dead
         this.alive = false;
       }
     }
   
-    // tryToPollinate() attempts to pollinate the flower provided as a parameter
-    // If pollination succeeds (the two overlap) then both grow
+    //This function checks if the bees are touching any flower object to pollinate and grow
     tryToPollinate(flower) {
-      // Calculate the distance between the bee and the flower
+      //This part checks if the objects overlap then grows the bee by our set amount
       let d = dist(this.x, this.y, flower.x, flower.y);
-      // If they overlap...
       if (d < this.size / 2 + flower.size / 2) {
-        // The bee should grow
-        // Notice how we can call OTHER METHODS of the Bee by using "this"
-        // So this.grow() calls the grow() method for THIS bee
+        //Here we are calling two other functions to grow the bee and pollinate the flower
         this.grow();
-        // The flower should react to being pollinated so we call its method
-        // that handles that!
         flower.pollinate();
       }
     }
   
-    // grow() causes the bee to get bigger up to a maximum (called by tryToPollinate())
+    //This function allows the bee to grow to our set amount and constrains the growth to our max size
     grow() {
-      // Grow by increasing the size by a set amount
       this.size = this.size + this.growRate;
-      // Constrain the growth to a maximum
       this.size = constrain(this.size, 0, this.maxSize);
     }
   
-    // move() moves the bee by potentially changing direction
-    // and then changing position based on velocity
+    //This function moves our bee by changing it's position and velocity
     move() {
-      // First check if we should change direction
+      //This section determines if our bee will change directions
       let r = random(0, 1);
       if (r < this.jitteriness) {
         this.vx = random(-this.speed, this.speed);
         this.vy = random(-this.speed, this.speed);
       }
-  
-      // Update position with velocity to actually move
+
       this.x = this.x + this.vx;
       this.y = this.y + this.vy;
   
-      // Constrain to the canvas (guess it's a walled garden!)
+      //This part constrains the bee's movement to our window
       this.x = constrain(this.x, 0, width);
       this.y = constrain(this.y, 0, height);
     }
   
-    // display() draws our bee onto the canvas
+    //This function displays our bee objects
     display() {
       push();
-      // Wings on either side
+      //Wings on either side
       fill(255, 255, 255);
       noStroke();
       ellipse(this.x - this.size / 2, this.y, this.size / 2);
       ellipse(this.x + this.size / 2, this.y, this.size / 2);
       pop();
   
-      // Body
+      //Body
       push();
       fill(225, 225, 50);
       noStroke();
       ellipse(this.x, this.y, this.size);
       pop();
   
-      // Eyes
+      //Eyes
       push();
       fill(0, 0, 0);
       noStroke();
@@ -95,4 +85,4 @@ class Bee {
       ellipse(this.x + this.size / 10, this.y, this.size / 10);
       pop();
     }
-  }
+}
