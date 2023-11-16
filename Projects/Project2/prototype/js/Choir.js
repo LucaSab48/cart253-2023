@@ -7,7 +7,7 @@ class Choir {
     }
 
     mouthMove() {
-        let size = map(mouseY, 0, height, 5, 30);
+        let size = map(mouseY, 0, height, 30, 5);
         this.mouthSize = size;
     }
     

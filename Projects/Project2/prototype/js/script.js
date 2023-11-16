@@ -11,7 +11,7 @@ let selection;
 
 let choir = [];
 
-let numChoirBoys = 10;
+let numChoirBoys = 20;
 
 let mouthSize = 10;
 
@@ -143,6 +143,7 @@ function setup() {
         let y = 200;
         let choirBoy = new Choir(x, y);
         choir.push(choirBoy);
+        x += 50;
     }
 }
 
