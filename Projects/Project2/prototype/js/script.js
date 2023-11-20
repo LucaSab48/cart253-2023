@@ -5,36 +5,122 @@
  */
 
 "use strict"
+
 let state = "title";
 
-let selection;
+let isDragging;
 
-let choir = [];
+let selection = 0;
 
-let numChoirBoys = 20;
+let choirRow1 = [];
+
+let choirRow2 = [];
+
+let choirRow3 = [];
+
+let numChoirBoys1 = 20;
+
+let numChoirBoys2 = 19;
+
+let numChoirBoys3 = 18;
 
 let mouthSize = 10;
+
+let choirSound = undefined;
+
+let pitch;
+
+let theremin;
+
+let wave = "sine";
+
+let leftButton = {
+    x: 0,
+    y: 0,
+    size: 50, 
+    fill: 200,
+}
+
+let rightButton = {
+    x: 0,
+    y: 0,
+    size: 50, 
+    fill: 200,
+}
+
+let thereminBase = {
+    x: 0, 
+    y: 0, 
+    width: 600, 
+    height: 60,
+    fill: 175
+};
+
+let thereminRod = {
+    x: 0, 
+    y: 0, 
+    width: 20, 
+    height: 550, 
+    fill: 210
+};
+
+let sineButton = {
+    x: 0, 
+    y: 0,
+    size: 50,  
+    width: 50, 
+    height: 50, 
+    img: undefined
+};
+
+let triangleButton = {
+    x: 0, 
+    y: 0,
+    size: 50, 
+    width: 75, 
+    height: 75, 
+    img: undefined
+};
+
+let squareButton = {
+    x: 0, 
+    y: 0,
+    size: 50, 
+    width: 75, 
+    height: 75, 
+    img: undefined
+};
+
+let sawtoothButton = {
+    x: 0, 
+    y: 0,
+    size: 50, 
+    width: 75, 
+    height: 75, 
+    img: undefined
+};
 
 let drumSelect = {
     x: 0, 
     y: 0, 
     width: 200,
     height: 200
-}
+};
 
 let choirSelect = {
     x: 0, 
     y: 0, 
     width: 200,
     height: 200
-}
+};
 
 let drum1 = {
     x: 0, 
     y: 0,
     size: 300,
     fill: 100,
-    sound: undefined
+    sound: undefined,
+    isOn: false,
 };
 
 let drum2 = {
@@ -43,6 +129,7 @@ let drum2 = {
     size: 200, 
     fill: 100, 
     sound: undefined,
+    isOn: false,
 };
 
 let drum3 = {
@@ -51,6 +138,7 @@ let drum3 = {
     size: 250, 
     fill: 100, 
     sound: undefined,
+    isOn: false,
 };
 
 let drum4 = {
@@ -59,6 +147,7 @@ let drum4 = {
     size: 180, 
     fill: 100, 
     sound: undefined,
+    isOn: false,
 };
 
 let cymbal1 = {
@@ -71,6 +160,7 @@ let cymbal1 = {
         b: 10,
     },
     sound: undefined,
+    isOn: false,
 };
 
 let cymbal2 = {
@@ -83,6 +173,7 @@ let cymbal2 = {
         b: 10,
     },
     sound: undefined,
+    isOn: false,
 };
 
 let bass = {
@@ -91,7 +182,8 @@ let bass = {
     width: 250,
     height: 300,
     fill: 100,
-    sound: undefined
+    sound: undefined,
+    isOn: false,
 };
 
 
@@ -105,12 +197,23 @@ function preload () {
     drum4.sound = loadSound("assets/sounds/drum4.mp3");
     cymbal2.sound = loadSound("assets/sounds/cymbal2.mp3");
     bass.sound = loadSound("assets/sounds/bass.mp3");
+    choirSound = loadSound("assets/sounds/choir3.mp3")
+    sineButton.img = loadImage("assets/images/sinewave1.png");
+    triangleButton.img = loadImage("assets/images/triangleWave1.png");
+    squareButton.img = loadImage("assets/images/squarewave1.png");
+    sawtoothButton.img = loadImage("assets/images/sawtoothwave1.png");
 }
 
 
 //In the set up i am setting the initial location of all my objects and creating my array of choir boys
 function setup() {
     createCanvas(1000, 700);
+    
+    leftButton.x = 50;
+    leftButton.y = height - 50;
+    rightButton.x = width - 50;
+    rightButton.y = height - 50; 
+    
     drumSelect.x = width/2 - 200;
     drumSelect.y = height/2;
 
@@ -138,13 +241,39 @@ function setup() {
     bass.x = width/2;
     bass.y = height/2 - 100;
 
-    for(let i = 0; i < numChoirBoys; i++) {
-        let x = random(0, width);
-        let y = 200;
-        let choirBoy = new Choir(x, y);
-        choir.push(choirBoy);
-        x += 50;
+    let x1 = 25;
+    let y1 = 100;
+    let x2 = 50;
+    let y2 = 200;
+
+    userStartAudio();
+    theremin = new p5.Oscillator(0, wave);
+    thereminBase.x = width/2;
+    thereminBase.y = height - 50;
+    thereminRod.x = thereminBase.x + 290;
+    thereminRod.y = thereminBase.y - 305;
+    sineButton.x = thereminBase.x - 250;
+    sineButton.y = thereminBase.y - 25;
+    triangleButton.x = thereminBase.x - 125;
+    triangleButton.y = thereminBase.y - 35;
+    squareButton.x = thereminBase.x;
+    squareButton.y = thereminBase.y - 35;
+    sawtoothButton.x = thereminBase.x + 125;
+    sawtoothButton.y = thereminBase.y - 35;
+
+
+    for(let i = 0; i < numChoirBoys1; i++) {
+        let choirBoy1 = new Choir(x1, y1);
+        choirRow1.push(choirBoy1);;
+        x1 += 50;
     }
+
+    for(let j = 0; j < numChoirBoys2; j++) {
+        let choirBoy2 = new Choir(x2, y2);
+        choirRow2.push(choirBoy2);;
+        x2 += 50;
+    }
+
 }
 
 
@@ -164,6 +293,9 @@ function draw() {
     else if (state === "choir") {
         choirPick();
     }
+    else if (state === "theremin") {
+        thereminPick();
+    }
 }
 
 
@@ -178,40 +310,116 @@ function mousePressed() {
     let d7 = dist(mouseX, mouseY, bass.x, bass.y);
     let d8 = dist(mouseX, mouseY, drumSelect.x, drumSelect.y);
     let d9 = dist(mouseX, mouseY, choirSelect.x, choirSelect.y);
+    let d10 = dist(mouseX, mouseY, sineButton.x + 25, sineButton.y + 25);
+    let d11 = dist(mouseX, mouseY, triangleButton.x + 38, triangleButton.y + 35);
+    let d12 = dist(mouseX, mouseY, squareButton.x + 38, squareButton.y + 35);
+    let d13 = dist(mouseX, mouseY, sawtoothButton.x + 38, sawtoothButton.y + 35);
+    let d14 = dist(mouseX, mouseY, leftButton.x, leftButton.y);
+    let d15 = dist(mouseX, mouseY, rightButton.x, rightButton.y);
+
+
+    if(state === "theremin") {
+        theremin.start();
+    }
+
+    if(state === "choir") {
+        isDragging = true;
+        if(!choirSound.isPlaying() && state === "choir") {
+            choirSound.loop();
+        }
+    }
 
     if(d1 < drum1.size / 2 && state === "drum kit") {
-        drum1.sound.play();
-        noLoop();
+        drum1.sound.setLoop(false);
+        if(!drum1.isOn){
+            drum1.sound.play();
+            drum1.isOn = true;
+        }
+        // if(!drum1.isOn) {
+        //     drum1.sound.play();
+        //     drum1.isOn = true;
+        // }
+        // else {
+        //     drum1.isOn = false;
+        // }
     }
 
     if(d2 < cymbal1.size / 2 && state === "drum kit") {
         cymbal1.sound.play();
         noLoop();
+        // if(!cymbal1.isOn) {
+        //     cymbal1.sound.play();
+        //     cymbal1.isOn = true;
+        // }
+        // else {
+        //     cymbal1.isOn = false;
+        // }
     }
 
     if(d3 < drum2.size / 2 && state === "drum kit" && d2 > cymbal1.size / 2) {
         drum2.sound.play();
         noLoop();
+        // if(!drum2.isOn) {
+        //     drum2.sound.play();
+        //     drum2.isOn = true;
+        // }
+        // else {
+        //     drum2.isOn = false;
+        // }
     }
 
     if(d4 < drum3.size / 2 && state === "drum kit") {
         drum3.sound.play();
         noLoop();
+        // if(!drum3.isOn) {
+        //     drum3.sound.play();
+        //     drum3.isOn = true;
+        // }
+        // else {
+        //     drum3.isOn = false;
+        // }
     }
     
     if(d5 < drum4.size / 2 && state === "drum kit" && d6 > cymbal2.size / 2) {
         drum4.sound.play();
         noLoop();
+        // if(!drum4.isOn) {
+        //     drum4.sound.play();
+        //     drum4.isOn = true;
+        // }
+        // else {
+        //     drum4.isOn = false;
+        // }
     }
 
     if(d6 < cymbal2.size / 2 && state === "drum kit") {
-        cymbal2.sound.play();
-        noLoop();
+        if(!cymbal2.isOn){
+            cymbal2.sound.play();
+            cymbal2.sound.setLoop(false);
+            cymbal2.isOn = true;
+        }
+        else {
+            cymbal2.isOn = false;
+        }
+        // if(!cymbal2.isOn) {
+        //     cymbal2.sound.play();
+        //     cymbal2.isOn = true;
+        // }
+        // else {
+        //     cymbal2.isOn = false;
+        // }
     }
  
     if((d7 < bass.width / 2 || d7 < bass.height / 2) && state === "drum kit" && d3 > drum2.size / 2 && d5 > drum4.size / 2) {
         bass.sound.play();
         noLoop();
+        // if(!bass.isOn) {
+        //     bass.sound.play();
+        //     bass.isOn = true;
+        // }
+        // else {
+        //     bass.isOn = false;
+        // }
     }
 
     if((d8 < drumSelect.height / 2 || d8 < drumSelect / 2) && state === "simulation") {
@@ -221,6 +429,60 @@ function mousePressed() {
     if((d9 < choirSelect.height / 2 || d9 < choirSelect.width / 2) && state === "simulation") {
         state = "choir";
     }
+
+    if(d10 < sineButton.size / 2 && state === "theremin") {
+        theremin.setType('sine');
+        wave = "sine";
+    }
+    
+    if(d11 < triangleButton.size / 2 && state === "theremin") {
+        theremin.setType("triangle");
+        wave = "triangle";
+    }
+    
+    if(d12 < squareButton.size / 2 && state === "theremin") {
+        theremin.setType('square');
+        wave = "square";
+    }
+    
+    if(d13 < sawtoothButton.size / 2 && state === "theremin") {
+        theremin.setType('sawtooth');
+        wave = "sawtooth";
+    }
+
+    if(d14 < leftButton.size / 2 && state === "drum kit") {
+        state = "choir";
+    }
+
+    if(d14 < leftButton.size / 2 && state === "theremin") {
+        state = "drum kit";
+    }
+
+    if(d14 < leftButton.size / 2 && state === "choir") {
+        state = "theremin";
+    }
+
+    if(d15 < rightButton.size / 2 && state === "drum kit") {
+        state = "theremin";
+    }
+
+    if(d15 < rightButton.size / 2 && state === "theremin") {
+        state = "choir";
+    }
+    
+    if(d15 < rightButton.size / 2 && state === "choir") {
+        state = "drum kit";
+    }
+}
+
+
+function mouseReleased() {
+    if(drum1.isOn){
+        drum1.isOn = false;
+    }
+    isDragging = false;
+    theremin.stop();
+    choirSound.stop();
 }
 
 
@@ -312,12 +574,45 @@ function displayBass() {
     rect(bass.x, bass.y, bass.width, bass.height - 20);
 }
 
+
+function displayTheremin() {
+    //Theremin Base
+    push();
+    noStroke();
+    rectMode(CENTER);
+    fill(thereminBase.fill);
+    rect(thereminBase.x, thereminBase.y, thereminBase.width, thereminBase.height);
+    pop();
+  
+    //Theremin Rod
+    push();
+    noStroke();
+    rectMode(CENTER);
+    fill(thereminRod.fill);
+    rect(thereminRod.x, thereminRod.y, thereminRod.width, thereminRod.height);
+  
+    //All the buttons 
+    fill(255);
+    ellipse(sineButton.x + 25, sineButton.y + 25, sineButton.size);
+    ellipse(triangleButton.x + 38, triangleButton.y + 35, triangleButton.size);
+    ellipse(squareButton.x + 38, squareButton.y + 35, squareButton.size);
+    ellipse(sawtoothButton.x + 38, sawtoothButton.y + 35, sawtoothButton.size);
+  
+    //All the images on the buttons
+    image(sineButton.img, sineButton.x, sineButton.y, sineButton.width, sineButton.height);
+    image(triangleButton.img, triangleButton.x, triangleButton.y, triangleButton.width, triangleButton.height);
+    image(squareButton.img, squareButton.x, squareButton.y, squareButton.width, squareButton.height);
+    image(sawtoothButton.img, sawtoothButton.x, sawtoothButton.y, sawtoothButton.width, sawtoothButton.height);
+}
+
+
 //This function is where the player can select the instrument
 //It calls all necessary functions
 function simulation() {
     background(255);
     displayChoirSelection();
     displayDrumSelection();
+    selection = 0;
 }
 
 
@@ -333,6 +628,7 @@ function title() {
 //This function starts when the state of our game is drum kit and calls all the necessary functions for it
 function drumKit() {
     background(0);
+    displayButtons();
     displayBass();
     displayDrum4();
     displayDrum3();
@@ -341,16 +637,57 @@ function drumKit() {
     displayCymbal1();
     displayCymbal2();
     mousePressed();
+    choirSound.stop();
+    selection = 1;
 }
 
 //Function that activates when state switches to choir
 function choirPick() {
     background(0);
-    for(let j = 0; j < choir.length; j++) {
-        let choirBoy = choir[j];
-        choirBoy.display();
-        choirBoy.mouthMove();
+    displayButtons();
+
+    pitch = map(mouseY, 0, height, 1.5, 0.5);
+    choirSound.rate(pitch);
+
+    for(let j = 0; j < choirRow1.length; j++) {
+        let choirBoy1 = choirRow1[j];
+        choirBoy1.display();
     }
+
+    for(let i = 0; i < choirRow2.length; i++) {
+        let choirBoy2 = choirRow2[i];
+        choirBoy2.display();
+    }
+
+    if(isDragging === true) {
+        for(let j = 0; j < choirRow1.length; j++) {
+            let choirBoy1 = choirRow1[j];
+            choirBoy1.mouthMove();
+            choirBoy1.bodyShake();
+            choirBoy1.redFace();
+        }
+
+        for(let i = 0; i < choirRow2.length; i++) {
+            let choirBoy2 = choirRow2[i];
+            choirBoy2.mouthMove();
+            choirBoy2.bodyShake();
+            choirBoy2.redFace();
+        }
+    }
+
+    if(isDragging === false) {
+        for(let j = 0; j < choirRow1.length; j++) {
+            let choirBoy1 = choirRow1[j];
+            choirBoy1.return();
+        }
+    
+        for(let i = 0; i < choirRow2.length; i++) {
+            let choirBoy2 = choirRow2[i];
+            choirBoy2.return();
+        }
+    }
+
+    selection = 3;
 }
 
 //This function allows our program to know when any key is pressed.
@@ -362,9 +699,48 @@ function keyPressed() {
     }
 
     if(keyCode === 32 && state === "choir") {
-        state = "drum kit";
+        state = "theremin";
+    }  
+}
+
+
+function thereminPick() {
+    background(0);
+    displayButtons();
+    displayTheremin();
+    displayValues();
+    if(mouseY > 0 || mouseY < 700) {
+        let newFreq = map(mouseY, height, 0, 0, 900);
+        theremin.freq(newFreq);
     }
+
+    let newAmp = map(mouseX, 0, width, 0, 0.6);
+    theremin.amp(newAmp);
     
+    choirSound.stop();
+
+    selection = 2;
+}
+
+
+function displayValues() {
+    let amp = theremin.getAmp();
+    let frequency = theremin.getFreq();
+    fill(255, 0, 0);
+    textAlign(CENTER, CENTER);
+    textSize(25);
+    text("Amp: " + amp, width / 2, 100);
+    text("Frequency: " + frequency, width / 2, 125);
+    text("Wave Type: " + wave, width / 2, 150);
+}
+
+
+function displayButtons() {
+    noStroke();
+    fill(leftButton.fill);
+    ellipse(leftButton.x, leftButton.y, leftButton.size);
+    fill(rightButton.fill);
+    ellipse(rightButton.x, rightButton.y, rightButton.size);
 }
 
 

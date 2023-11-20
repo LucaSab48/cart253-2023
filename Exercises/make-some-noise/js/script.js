@@ -84,7 +84,7 @@ function preload() {
 
 //In the setup function, I am making the canvas, setting the oscillator and positioning all the objects
 function setup() {
-  createCanvas(700, 700);
+  createCanvas(1000, 700);
   userStartAudio();
   theremin = new p5.Oscillator(0, wave);
   thereminBase.x = width/2;
