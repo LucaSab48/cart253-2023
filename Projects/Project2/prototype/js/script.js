@@ -10,6 +10,8 @@ let state = "title";
 
 let isDragging;
 
+let clickTime = 0;
+
 let selection = 0;
 
 let choirRow1 = [];
@@ -290,11 +292,11 @@ function draw() {
     else if (state === "drum kit") {
         drumKit();
     }
-    else if (state === "choir") {
-        choirPick();
-    }
     else if (state === "theremin") {
         thereminPick();
+    }
+    else if (state === "choir") {
+        choirPick();
     }
 }
 
@@ -330,96 +332,53 @@ function mousePressed() {
     }
 
     if(d1 < drum1.size / 2 && state === "drum kit") {
-        drum1.sound.setLoop(false);
         if(!drum1.isOn){
             drum1.sound.play();
             drum1.isOn = true;
         }
-        // if(!drum1.isOn) {
-        //     drum1.sound.play();
-        //     drum1.isOn = true;
-        // }
-        // else {
-        //     drum1.isOn = false;
-        // }
     }
 
     if(d2 < cymbal1.size / 2 && state === "drum kit") {
-        cymbal1.sound.play();
-        noLoop();
-        // if(!cymbal1.isOn) {
-        //     cymbal1.sound.play();
-        //     cymbal1.isOn = true;
-        // }
-        // else {
-        //     cymbal1.isOn = false;
-        // }
+        if(!cymbal1.isOn) {
+            cymbal1.sound.play();
+            cymbal1.isOn = true;
+        }
+
     }
 
     if(d3 < drum2.size / 2 && state === "drum kit" && d2 > cymbal1.size / 2) {
-        drum2.sound.play();
-        noLoop();
-        // if(!drum2.isOn) {
-        //     drum2.sound.play();
-        //     drum2.isOn = true;
-        // }
-        // else {
-        //     drum2.isOn = false;
-        // }
+        if(!drum2.isOn) {
+            drum2.sound.play();
+            drum2.isOn = true;
+        }
     }
 
     if(d4 < drum3.size / 2 && state === "drum kit") {
-        drum3.sound.play();
-        noLoop();
-        // if(!drum3.isOn) {
-        //     drum3.sound.play();
-        //     drum3.isOn = true;
-        // }
-        // else {
-        //     drum3.isOn = false;
-        // }
+        if(!drum3.isOn) {
+            drum3.sound.play();
+            drum3.isOn = true;
+        }
     }
     
     if(d5 < drum4.size / 2 && state === "drum kit" && d6 > cymbal2.size / 2) {
-        drum4.sound.play();
-        noLoop();
-        // if(!drum4.isOn) {
-        //     drum4.sound.play();
-        //     drum4.isOn = true;
-        // }
-        // else {
-        //     drum4.isOn = false;
-        // }
+        if(!drum4.isOn) {
+            drum4.sound.play();
+            drum4.isOn = true;
+        }
     }
 
     if(d6 < cymbal2.size / 2 && state === "drum kit") {
-        if(!cymbal2.isOn){
+        if(!cymbal2.isOn) {
             cymbal2.sound.play();
-            cymbal2.sound.setLoop(false);
             cymbal2.isOn = true;
         }
-        else {
-            cymbal2.isOn = false;
-        }
-        // if(!cymbal2.isOn) {
-        //     cymbal2.sound.play();
-        //     cymbal2.isOn = true;
-        // }
-        // else {
-        //     cymbal2.isOn = false;
-        // }
     }
  
     if((d7 < bass.width / 2 || d7 < bass.height / 2) && state === "drum kit" && d3 > drum2.size / 2 && d5 > drum4.size / 2) {
-        bass.sound.play();
-        noLoop();
-        // if(!bass.isOn) {
-        //     bass.sound.play();
-        //     bass.isOn = true;
-        // }
-        // else {
-        //     bass.isOn = false;
-        // }
+        if(!bass.isOn) {
+            bass.sound.play();
+            bass.isOn = true;
+        }
     }
 
     if((d8 < drumSelect.height / 2 || d8 < drumSelect / 2) && state === "simulation") {
@@ -450,39 +409,91 @@ function mousePressed() {
         wave = "sawtooth";
     }
 
-    if(d14 < leftButton.size / 2 && state === "drum kit") {
-        state = "choir";
-    }
+    // if(d14 < leftButton.size / 2 && state === "drum kit") {
+    //     state = "choir";
+    // }
 
-    if(d14 < leftButton.size / 2 && state === "theremin") {
-        state = "drum kit";
-    }
+    // if(d14 < leftButton.size / 2 && state === "theremin") {
+    //     state = "drum kit";
+    // }
 
-    if(d14 < leftButton.size / 2 && state === "choir") {
-        state = "theremin";
-    }
+    // if(d14 < leftButton.size / 2 && state === "choir") {
+    //     state = "theremin";
+    // }
 
-    if(d15 < rightButton.size / 2 && state === "drum kit") {
-        state = "theremin";
-    }
+    // if(d15 < rightButton.size / 2 && state === "drum kit") {
+    //     state = "theremin";
+    // }
 
-    if(d15 < rightButton.size / 2 && state === "theremin") {
-        state = "choir";
-    }
+    // if(d15 < rightButton.size / 2 && state === "theremin") {
+    //     state = "choir";
+    // }
     
-    if(d15 < rightButton.size / 2 && state === "choir") {
-        state = "drum kit";
-    }
+    // if(d15 < rightButton.size / 2 && state === "choir") {
+    //     state = "drum kit";
+    // }
 }
 
 
 function mouseReleased() {
-    if(drum1.isOn){
-        drum1.isOn = false;
+    let d1 = dist(mouseX, mouseY, drum1.x, drum1.y);
+    let d2 = dist(mouseX, mouseY, cymbal1.x, cymbal1.y);
+    let d3 = dist(mouseX, mouseY, drum2.x, drum2.y);
+    let d4 = dist(mouseX, mouseY, drum3.x, drum3.y);
+    let d5 = dist(mouseX, mouseY, drum4.x, drum4.y);
+    let d6 = dist(mouseX, mouseY, cymbal2.x, cymbal2.y);
+    let d7 = dist(mouseX, mouseY, bass.x, bass.y);
+    if(d1 < drum1.size / 2 && state === "drum kit") {
+        if(drum1.isOn){
+            drum1.isOn = false;
+        }
     }
+
+    if(d2 < cymbal1.size / 2 && state === "drum kit") {
+        if(cymbal1.isOn){
+            cymbal1.isOn = false;
+        }
+    }
+
+    if(d3 < drum2.size / 2 && state === "drum kit" && d2 > cymbal1.size / 2) {
+        if(drum2.isOn){
+            drum2.isOn = false;
+        }
+    }
+
+    if(d4 < drum3.size / 2 && state === "drum kit") {
+        if(drum3.isOn){
+            drum3.isOn = false;
+        }
+    }
+
+    if(d5 < drum4.size / 2 && state === "drum kit" && d6 > cymbal2.size / 2) {
+        if(drum4.isOn){
+            drum4.isOn = false;
+        }
+    }
+
+    if(d6 < cymbal2.size / 2 && state === "drum kit") {
+        if(cymbal2.isOn){
+            cymbal2.isOn = false;
+        }
+    }
+
+    if((d7 < bass.width / 2 || d7 < bass.height / 2) && state === "drum kit" && state === "drum kit" && d3 > drum2.size / 2 && d5 > drum4.size / 2) {
+        if(bass.isOn) {
+            bass.isOn = false;
+        }
+    }
+
     isDragging = false;
-    theremin.stop();
-    choirSound.stop();
+
+    if(state === "theremin") {
+        theremin.stop();
+    }
+
+    if(state === "choir") {
+        choirSound.stop();
+    }
 }
 
 
@@ -612,7 +623,6 @@ function simulation() {
     background(255);
     displayChoirSelection();
     displayDrumSelection();
-    selection = 0;
 }
 
 
@@ -636,9 +646,6 @@ function drumKit() {
     displayDrum1();
     displayCymbal1();
     displayCymbal2();
-    mousePressed();
-    choirSound.stop();
-    selection = 1;
 }
 
 //Function that activates when state switches to choir
@@ -686,8 +693,6 @@ function choirPick() {
             choirBoy2.return();
         }
     }
-
-    selection = 3;
 }
 
 //This function allows our program to know when any key is pressed.
@@ -697,10 +702,33 @@ function keyPressed() {
     if(state === "title") {
         state = "simulation";
     }
-
-    if(keyCode === 32 && state === "choir") {
+    else if(keyCode === 67 && state === "simulation") {
+        state = "choir";
+    }
+    else if(keyCode === RIGHT_ARROW && state === "simulation") {
+        state = "drum kit";
+    }
+    else if(keyCode === RIGHT_ARROW && state === "drum kit") {
         state = "theremin";
-    }  
+    }
+    else if(keyCode === RIGHT_ARROW && state === "theremin") {
+        state = "choir";
+    }
+    else if(keyCode === RIGHT_ARROW && state === "choir") {
+        state = "drum kit";
+    }
+    else if(keyCode === LEFT_ARROW && state === "simulation") {
+        state = "choir";
+    }
+    else if(keyCode === LEFT_ARROW && state === "drum kit") {
+        state = "choir";
+    }
+    else if(keyCode === LEFT_ARROW && state === "theremin") {
+        state = "drum kit";
+    }
+    else if(keyCode === LEFT_ARROW && state === "choir") {
+        state = "theremin";
+    }
 }
 
 
@@ -716,10 +744,6 @@ function thereminPick() {
 
     let newAmp = map(mouseX, 0, width, 0, 0.6);
     theremin.amp(newAmp);
-    
-    choirSound.stop();
-
-    selection = 2;
 }
 
 
