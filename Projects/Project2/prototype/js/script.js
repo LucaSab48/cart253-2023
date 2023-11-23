@@ -10,9 +10,15 @@ let state = "title";
 
 let isDragging;
 
+let dKit;
+
+let angle1 = 50;
+
 let clickTime = 0;
 
 let selection = 0;
+
+let pan;
 
 let choirRow1 = [];
 
@@ -28,11 +34,27 @@ let numChoirBoys3 = 18;
 
 let mouthSize = 10;
 
+let choirV1 = undefined;
+
+let choirV2 = undefined;
+
 let choirSound = undefined;
+
+let choirBG = undefined;
+
+let choirRobe = undefined;
+
+let choirHair = undefined;
 
 let pitch;
 
+let path;
+
 let theremin;
+
+let amplitude;
+
+let lineY;
 
 let wave = "sine";
 
@@ -109,11 +131,26 @@ let drumSelect = {
     height: 200
 };
 
+let thereminSelect = {
+    x: 0,
+    y: 0, 
+    width: 200,
+    height: 200
+}
+
 let choirSelect = {
     x: 0, 
     y: 0, 
     width: 200,
     height: 200
+};
+
+let drumStick = {
+    x: 0,
+    y: 0, 
+    width: 100, 
+    height: 100, 
+    img: undefined
 };
 
 let drum1 = {
@@ -188,6 +225,15 @@ let bass = {
     isOn: false,
 };
 
+let kick = {
+    x: 0,
+    y1: 0, 
+    y: 0, 
+    vy: 1, 
+    width: 50,
+    height: 120
+};
+
 
 //Here we are pre loading all the sounds that will be used 
 function preload () {
@@ -199,11 +245,15 @@ function preload () {
     drum4.sound = loadSound("assets/sounds/drum4.mp3");
     cymbal2.sound = loadSound("assets/sounds/cymbal2.mp3");
     bass.sound = loadSound("assets/sounds/bass.mp3");
-    choirSound = loadSound("assets/sounds/choir3.mp3")
+    choirV1 = loadSound("assets/sounds/choir3.mp3");
+    choirV2 = loadSound("assets/sounds/choir.v2.mp3");
     sineButton.img = loadImage("assets/images/sinewave1.png");
     triangleButton.img = loadImage("assets/images/triangleWave1.png");
     squareButton.img = loadImage("assets/images/squarewave1.png");
     sawtoothButton.img = loadImage("assets/images/sawtoothwave1.png");
+    drumStick.img = loadImage("assets/images/images/drumstick1.webp");
+    choirBG = loadImage("assets/images/choirBG.jpg");
+    choirRobe = loadImage("assets/images/robe2.png");
 }
 
 
@@ -216,10 +266,13 @@ function setup() {
     rightButton.x = width - 50;
     rightButton.y = height - 50; 
     
-    drumSelect.x = width/2 - 200;
+    drumSelect.x = 150;
     drumSelect.y = height/2;
 
-    choirSelect.x = width/2 + 200;
+    thereminSelect.x = 500;
+    thereminSelect.y = height / 2;
+
+    choirSelect.x = 850;
     choirSelect.y = height/2;
 
     drum1.x = width/2 + 300;
@@ -243,13 +296,18 @@ function setup() {
     bass.x = width/2;
     bass.y = height/2 - 100;
 
+    kick.x = width/2;
+    kick.y = height/2 + 120;
+    kick.y1 = kick.y;
+
     let x1 = 25;
-    let y1 = 100;
+    let y1 = 120;
     let x2 = 50;
-    let y2 = 200;
+    let y2 = 220;
 
     userStartAudio();
     theremin = new p5.Oscillator(0, wave);
+    amplitude = new p5.Amplitude();
     thereminBase.x = width/2;
     thereminBase.y = height - 50;
     thereminRod.x = thereminBase.x + 290;
@@ -263,16 +321,15 @@ function setup() {
     sawtoothButton.x = thereminBase.x + 125;
     sawtoothButton.y = thereminBase.y - 35;
 
-
     for(let i = 0; i < numChoirBoys1; i++) {
-        let choirBoy1 = new Choir(x1, y1);
-        choirRow1.push(choirBoy1);;
+        let choirBoy1 = new Choir(x1, y1, choirRobe);
+        choirRow1.push(choirBoy1);
         x1 += 50;
     }
 
     for(let j = 0; j < numChoirBoys2; j++) {
-        let choirBoy2 = new Choir(x2, y2);
-        choirRow2.push(choirBoy2);;
+        let choirBoy2 = new Choir(x2, y2, choirRobe);
+        choirRow2.push(choirBoy2);
         x2 += 50;
     }
 
@@ -283,6 +340,7 @@ function setup() {
 //In the draw function, I am switching the states of the simulation. 
 function draw() {
     print(state);
+    choirSound = choirV2;
     if (state === "title") {
         title();
     }
@@ -316,25 +374,20 @@ function mousePressed() {
     let d11 = dist(mouseX, mouseY, triangleButton.x + 38, triangleButton.y + 35);
     let d12 = dist(mouseX, mouseY, squareButton.x + 38, squareButton.y + 35);
     let d13 = dist(mouseX, mouseY, sawtoothButton.x + 38, sawtoothButton.y + 35);
-    let d14 = dist(mouseX, mouseY, leftButton.x, leftButton.y);
-    let d15 = dist(mouseX, mouseY, rightButton.x, rightButton.y);
+    let d14 = dist(mouseX, mouseY, thereminSelect.x, thereminSelect.y);
 
 
     if(state === "theremin") {
         theremin.start();
     }
 
-    if(state === "choir") {
-        isDragging = true;
-        if(!choirSound.isPlaying() && state === "choir") {
-            choirSound.loop();
-        }
-    }
-
     if(d1 < drum1.size / 2 && state === "drum kit") {
         if(!drum1.isOn){
             drum1.sound.play();
             drum1.isOn = true;
+            drum1.size = drum1.size - 10;
+            dKit = "drum1";
+            angle1 = 110;
         }
     }
 
@@ -342,6 +395,9 @@ function mousePressed() {
         if(!cymbal1.isOn) {
             cymbal1.sound.play();
             cymbal1.isOn = true;
+            dKit = "cymbal1";
+            cymbal1.size += -10;
+            angle1 = 110;
         }
 
     }
@@ -350,6 +406,9 @@ function mousePressed() {
         if(!drum2.isOn) {
             drum2.sound.play();
             drum2.isOn = true;
+            drum2.size += -10;
+            dKit = "drum2";
+            angle1 = 110;
         }
     }
 
@@ -357,6 +416,9 @@ function mousePressed() {
         if(!drum3.isOn) {
             drum3.sound.play();
             drum3.isOn = true;
+            drum3.size += -10;
+            dKit = "drum3";
+            angle1 = 110;
         }
     }
     
@@ -364,6 +426,9 @@ function mousePressed() {
         if(!drum4.isOn) {
             drum4.sound.play();
             drum4.isOn = true;
+            drum4.size += -10;
+            dKit = "drum4";
+            angle1 = 110;
         }
     }
 
@@ -371,6 +436,9 @@ function mousePressed() {
         if(!cymbal2.isOn) {
             cymbal2.sound.play();
             cymbal2.isOn = true;
+            dKit = "cymbal2";
+            cymbal2.size += -10;
+            angle1 = 110;
         }
     }
  
@@ -378,6 +446,9 @@ function mousePressed() {
         if(!bass.isOn) {
             bass.sound.play();
             bass.isOn = true;
+            dKit = "bass";
+            kick.y1 += -70;
+            angle1 = 110;   
         }
     }
 
@@ -409,29 +480,9 @@ function mousePressed() {
         wave = "sawtooth";
     }
 
-    // if(d14 < leftButton.size / 2 && state === "drum kit") {
-    //     state = "choir";
-    // }
-
-    // if(d14 < leftButton.size / 2 && state === "theremin") {
-    //     state = "drum kit";
-    // }
-
-    // if(d14 < leftButton.size / 2 && state === "choir") {
-    //     state = "theremin";
-    // }
-
-    // if(d15 < rightButton.size / 2 && state === "drum kit") {
-    //     state = "theremin";
-    // }
-
-    // if(d15 < rightButton.size / 2 && state === "theremin") {
-    //     state = "choir";
-    // }
-    
-    // if(d15 < rightButton.size / 2 && state === "choir") {
-    //     state = "drum kit";
-    // }
+    if((d14 < thereminSelect.width / 2 || d14 < thereminSelect.height / 2) && state === "simulation") {
+        state = "theremin";
+    }
 }
 
 
@@ -443,55 +494,120 @@ function mouseReleased() {
     let d5 = dist(mouseX, mouseY, drum4.x, drum4.y);
     let d6 = dist(mouseX, mouseY, cymbal2.x, cymbal2.y);
     let d7 = dist(mouseX, mouseY, bass.x, bass.y);
-    if(d1 < drum1.size / 2 && state === "drum kit") {
+    // if(d1 < drum1.size / 2 && state === "drum kit") {
+    //     if(drum1.isOn){
+    //         drum1.isOn = false;
+    //         drum1.size = drum1.size + 10;
+    //     }
+    // }
+
+    if(dKit === "drum1") {
         if(drum1.isOn){
             drum1.isOn = false;
+            drum1.size = drum1.size + 10;
+            angle1 = 50;
         }
     }
 
-    if(d2 < cymbal1.size / 2 && state === "drum kit") {
+    if(dKit === "cymbal1") {
         if(cymbal1.isOn){
             cymbal1.isOn = false;
+            cymbal1.size += 10;
+            angle1 = 50;
         }
     }
 
-    if(d3 < drum2.size / 2 && state === "drum kit" && d2 > cymbal1.size / 2) {
+    if(dKit === "drum2") {
         if(drum2.isOn){
             drum2.isOn = false;
+            drum2.size += 10;
+            angle1 = 50;
         }
     }
 
-    if(d4 < drum3.size / 2 && state === "drum kit") {
+    if(dKit === "drum3") {
         if(drum3.isOn){
             drum3.isOn = false;
+            drum3.size += 10;
+            angle1 = 50;
         }
     }
 
-    if(d5 < drum4.size / 2 && state === "drum kit" && d6 > cymbal2.size / 2) {
+    if(dKit === "drum4") {
         if(drum4.isOn){
             drum4.isOn = false;
+            drum4.size += 10;
+            angle1 = 50;
         }
     }
 
-    if(d6 < cymbal2.size / 2 && state === "drum kit") {
+    if(dKit === "cymbal2") {
         if(cymbal2.isOn){
             cymbal2.isOn = false;
+            cymbal2.size += 10;
+            angle1 = 50;
         }
     }
 
-    if((d7 < bass.width / 2 || d7 < bass.height / 2) && state === "drum kit" && state === "drum kit" && d3 > drum2.size / 2 && d5 > drum4.size / 2) {
+    if(dKit === "bass") {
         if(bass.isOn) {
             bass.isOn = false;
+            kick.y1 += 70
+            angle1 = 50;
         }
     }
-
-    isDragging = false;
 
     if(state === "theremin") {
         theremin.stop();
     }
 
-    if(state === "choir") {
+}
+
+
+//This function allows our program to know when any key is pressed.
+//It is currently only switching the state of the choir to the drum kit when the space bar is pressed
+//This is because i cant figure out currently how to play an audio file once without stopping the loop
+function keyPressed() {
+    if(state === "title") {
+        state = "simulation";
+    }
+    else if(keyCode === RIGHT_ARROW && state === "simulation") {
+        state = "drum kit";
+    }
+    else if(keyCode === RIGHT_ARROW && state === "drum kit") {
+        state = "theremin";
+    }
+    else if(keyCode === RIGHT_ARROW && state === "theremin") {
+        state = "choir";
+    }
+    else if(keyCode === RIGHT_ARROW && state === "choir") {
+        state = "drum kit";
+    }
+    else if(keyCode === LEFT_ARROW && state === "simulation") {
+        state = "choir";
+    }
+    else if(keyCode === LEFT_ARROW && state === "drum kit") {
+        state = "choir";
+    }
+    else if(keyCode === LEFT_ARROW && state === "theremin") {
+        state = "drum kit";
+    }
+    else if(keyCode === LEFT_ARROW && state === "choir") {
+        state = "theremin";
+    }
+    else if( keyCode === 32 && state === "choir") {
+        isDragging = true;
+        if(!choirSound.isPlaying() && state === "choir") {
+                choirSound.loop();
+        }
+        
+    }
+}
+
+
+function keyReleased() {
+    if(keyCode === 32 && state === "choir") {
+        isDragging = false;
         choirSound.stop();
     }
 }
@@ -503,6 +619,23 @@ function displayDrumSelection() {
     rectMode(CENTER);
     fill(255, 0, 0);
     rect(drumSelect.x, drumSelect.y, drumSelect.width, drumSelect.height);
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(30);
+    text("Drums", drumSelect.x, drumSelect.y);
+
+}
+
+
+function displayThereminSelect() {
+    noStroke();
+    rectMode(CENTER);
+    fill(0, 255, 0);
+    rect(thereminSelect.x, thereminSelect.y, thereminSelect.width, thereminSelect.height);
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(30);
+    text("Theremin", thereminSelect.x, thereminSelect.y);
 }
 
 
@@ -510,8 +643,12 @@ function displayDrumSelection() {
 function displayChoirSelection() {
     noStroke();
     rectMode(CENTER);
-    fill(0, 255, 0);
+    fill(0, 0, 255);
     rect(choirSelect.x, choirSelect.y, choirSelect.width, choirSelect.height);
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(30);
+    text("Choir", choirSelect.x, choirSelect.y);
 }
 
 
@@ -586,6 +723,30 @@ function displayBass() {
 }
 
 
+function displayBassKick() {
+    noStroke();
+    fill(100);
+    rectMode(CENTER);
+    rect(kick.x, kick.y, kick.width, kick.height);
+    fill(255);
+    rect(kick.x, kick.y1 + 20, kick.width - 20, kick.height - 90);
+}
+
+
+function displayDrumStick() {
+    noCursor();
+    drumStick.x = mouseX;
+    drumStick.y = mouseY;
+    angleMode(DEGREES);
+    noStroke();
+    translate(drumStick.x, drumStick.y);
+    rotate(angle1);
+    fill(200, 87, 51);
+    ellipse(0, 80, drumStick.width - 90, drumStick.height + 80);
+    ellipse(0, -15, drumStick.width - 88);
+}
+
+
 function displayTheremin() {
     //Theremin Base
     push();
@@ -621,6 +782,7 @@ function displayTheremin() {
 //It calls all necessary functions
 function simulation() {
     background(255);
+    displayThereminSelect();
     displayChoirSelection();
     displayDrumSelection();
 }
@@ -638,7 +800,6 @@ function title() {
 //This function starts when the state of our game is drum kit and calls all the necessary functions for it
 function drumKit() {
     background(0);
-    displayButtons();
     displayBass();
     displayDrum4();
     displayDrum3();
@@ -646,15 +807,21 @@ function drumKit() {
     displayDrum1();
     displayCymbal1();
     displayCymbal2();
+    displayBassKick();
+    displayDrumStick();
 }
 
 //Function that activates when state switches to choir
 function choirPick() {
     background(0);
-    displayButtons();
+    // displayChoirBG();
+    cursor();
 
-    pitch = map(mouseY, 0, height, 1.5, 0.5);
+    pitch = map(mouseY, 0, height, 2, 0.5);
     choirSound.rate(pitch);
+
+    path = map(mouseX, 0, width, -1.0, 1.0);
+    choirSound.pan(path);
 
     for(let j = 0; j < choirRow1.length; j++) {
         let choirBoy1 = choirRow1[j];
@@ -695,46 +862,17 @@ function choirPick() {
     }
 }
 
-//This function allows our program to know when any key is pressed.
-//It is currently only switching the state of the choir to the drum kit when the space bar is pressed
-//This is because i cant figure out currently how to play an audio file once without stopping the loop
-function keyPressed() {
-    if(state === "title") {
-        state = "simulation";
-    }
-    else if(keyCode === 67 && state === "simulation") {
-        state = "choir";
-    }
-    else if(keyCode === RIGHT_ARROW && state === "simulation") {
-        state = "drum kit";
-    }
-    else if(keyCode === RIGHT_ARROW && state === "drum kit") {
-        state = "theremin";
-    }
-    else if(keyCode === RIGHT_ARROW && state === "theremin") {
-        state = "choir";
-    }
-    else if(keyCode === RIGHT_ARROW && state === "choir") {
-        state = "drum kit";
-    }
-    else if(keyCode === LEFT_ARROW && state === "simulation") {
-        state = "choir";
-    }
-    else if(keyCode === LEFT_ARROW && state === "drum kit") {
-        state = "choir";
-    }
-    else if(keyCode === LEFT_ARROW && state === "theremin") {
-        state = "drum kit";
-    }
-    else if(keyCode === LEFT_ARROW && state === "choir") {
-        state = "theremin";
-    }
+
+function displayChoirBG() {
+    imageMode(CENTER);
+    image(choirBG, width/2, height/2, width, height);
 }
 
 
 function thereminPick() {
     background(0);
-    displayButtons();
+    cursor();
+    displayLine();
     displayTheremin();
     displayValues();
     if(mouseY > 0 || mouseY < 700) {
@@ -743,7 +881,15 @@ function thereminPick() {
     }
 
     let newAmp = map(mouseX, 0, width, 0, 0.6);
-    theremin.amp(newAmp);
+    theremin.amp(newAmp, 0.1);
+}
+
+function displayLine() {
+    stroke(255);
+    strokeWeight(5);
+    let mappedAmp = map(theremin.getAmp(), 0, 0.6, width, 0);
+    let mappedFreq = map(theremin.getFreq(), 0, 900, height, 0);
+    line(0, mappedAmp, width, mappedFreq);
 }
 
 
@@ -758,13 +904,5 @@ function displayValues() {
     text("Wave Type: " + wave, width / 2, 150);
 }
 
-
-function displayButtons() {
-    noStroke();
-    fill(leftButton.fill);
-    ellipse(leftButton.x, leftButton.y, leftButton.size);
-    fill(rightButton.fill);
-    ellipse(rightButton.x, rightButton.y, rightButton.size);
-}
 
 

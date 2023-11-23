@@ -1,5 +1,5 @@
 class Choir {
-    constructor(x, y) {
+    constructor(x, y, image1) {
         this.x = x;
         this.y = y;
         this.size = 100;
@@ -10,6 +10,7 @@ class Choir {
             g: 198,
             b: 153,
         };
+        this.bodyImage = image1;
         this.minShake = 0;
         this.maxShake = 0.5; 
         this.faceReturn = random(0.1, 0.5);
@@ -36,11 +37,11 @@ class Choir {
     }
     
     display() {
+        stroke(0);
+        image(this.bodyImage, this.x - 73, this.y, this.size + 40, this.size + 120);
         noStroke();
         fill(this.fill.r, this.fill.g, this.fill.b);
         ellipse(this.headX, this.y, this.size / 2);
-        fill(255);
-        ellipse(this.x, this.y + 106, this.size / 2, this.size + 60);
         fill(0);
         ellipse(this.headX - 12, this.y, this.size / 10 );
         fill(0);
@@ -52,11 +53,11 @@ class Choir {
     return() {
         this.headX = this.x;
         if(this.mouthSize > 10) {
-            this.mouthSize += -0.05;
+            this.mouthSize += -0.1;
         }
 
         if(this.mouthSize < 10) {
-            this.mouthSize += 0.05;
+            this.mouthSize += 0.1;
         }
 
         if(this.fill.g < 198) {
@@ -66,17 +67,5 @@ class Choir {
         if(this.fill.b < 153) {
             this.fill.b += this.faceReturn;
         }
-        
-        // noStroke();
-        // fill(255, 198, 153);
-        // ellipse(this.x, this.y, this.size / 2);
-        // fill(255);
-        // ellipse(this.x, this.y + 106, this.size / 2, this.size + 60);
-        // fill(0);
-        // ellipse(this.x - 15, this.y, this.size / 10 );
-        // fill(0);
-        // ellipse(this.x + 15, this.y, this.size / 10);
-        // fill(0);
-        // ellipse(this.x, this.y + 15, 10);
     }
 }
