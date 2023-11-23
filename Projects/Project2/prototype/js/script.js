@@ -58,14 +58,14 @@ let lineY;
 
 let wave = "sine";
 
-let leftButton = {
+let choirV1Button = {
     x: 0,
     y: 0,
     size: 50, 
     fill: 200,
 }
 
-let rightButton = {
+let choirV2Button = {
     x: 0,
     y: 0,
     size: 50, 
@@ -261,10 +261,10 @@ function preload () {
 function setup() {
     createCanvas(1000, 700);
     
-    leftButton.x = 50;
-    leftButton.y = height - 50;
-    rightButton.x = width - 50;
-    rightButton.y = height - 50; 
+    choirV1Button.x = 50;
+    choirV1Button.y = height - 50;
+    choirV2Button.x = width - 50;
+    choirV2Button.y = height - 50; 
     
     drumSelect.x = 150;
     drumSelect.y = height/2;
@@ -274,6 +274,8 @@ function setup() {
 
     choirSelect.x = 850;
     choirSelect.y = height/2;
+
+    choirSound = choirV1;
 
     drum1.x = width/2 + 300;
     drum1.y = height/2 + 100;
@@ -301,9 +303,11 @@ function setup() {
     kick.y1 = kick.y;
 
     let x1 = 25;
-    let y1 = 120;
+    let y1 = 150;
     let x2 = 50;
-    let y2 = 220;
+    let y2 = 250;
+    let x3 = 75;
+    let y3 = 350;
 
     userStartAudio();
     theremin = new p5.Oscillator(0, wave);
@@ -333,6 +337,11 @@ function setup() {
         x2 += 50;
     }
 
+    for(let z = 0; z < numChoirBoys3; z++) {
+        let choirBoy3 = new Choir(x3, y3, choirRobe);
+        choirRow3.push(choirBoy3);
+        x3 += 50;
+    }
 }
 
 
@@ -340,7 +349,6 @@ function setup() {
 //In the draw function, I am switching the states of the simulation. 
 function draw() {
     print(state);
-    choirSound = choirV2;
     if (state === "title") {
         title();
     }
@@ -375,6 +383,8 @@ function mousePressed() {
     let d12 = dist(mouseX, mouseY, squareButton.x + 38, squareButton.y + 35);
     let d13 = dist(mouseX, mouseY, sawtoothButton.x + 38, sawtoothButton.y + 35);
     let d14 = dist(mouseX, mouseY, thereminSelect.x, thereminSelect.y);
+    let d15 = dist(mouseX, mouseY, choirV1Button.x, choirV1Button.y);
+    let d16 = dist(mouseX, mouseY, choirV2Button.x, choirV2Button.y);
 
 
     if(state === "theremin") {
@@ -447,8 +457,7 @@ function mousePressed() {
             bass.sound.play();
             bass.isOn = true;
             dKit = "bass";
-            kick.y1 += -70;
-            angle1 = 110;   
+            kick.y1 += -70;  
         }
     }
 
@@ -483,23 +492,18 @@ function mousePressed() {
     if((d14 < thereminSelect.width / 2 || d14 < thereminSelect.height / 2) && state === "simulation") {
         state = "theremin";
     }
+
+    if(d15 < choirV1Button.size / 2 && state === "choir") {
+        choirSound = choirV1;
+    }
+
+    if(d16 < choirV2Button.size / 2 && state === "choir") {
+        choirSound = choirV2;
+    }
 }
 
 
 function mouseReleased() {
-    let d1 = dist(mouseX, mouseY, drum1.x, drum1.y);
-    let d2 = dist(mouseX, mouseY, cymbal1.x, cymbal1.y);
-    let d3 = dist(mouseX, mouseY, drum2.x, drum2.y);
-    let d4 = dist(mouseX, mouseY, drum3.x, drum3.y);
-    let d5 = dist(mouseX, mouseY, drum4.x, drum4.y);
-    let d6 = dist(mouseX, mouseY, cymbal2.x, cymbal2.y);
-    let d7 = dist(mouseX, mouseY, bass.x, bass.y);
-    // if(d1 < drum1.size / 2 && state === "drum kit") {
-    //     if(drum1.isOn){
-    //         drum1.isOn = false;
-    //         drum1.size = drum1.size + 10;
-    //     }
-    // }
 
     if(dKit === "drum1") {
         if(drum1.isOn){
@@ -553,7 +557,6 @@ function mouseReleased() {
         if(bass.isOn) {
             bass.isOn = false;
             kick.y1 += 70
-            angle1 = 50;
         }
     }
 
@@ -814,7 +817,8 @@ function drumKit() {
 //Function that activates when state switches to choir
 function choirPick() {
     background(0);
-    // displayChoirBG();
+    displayChoirBG();   
+    displayChoirSound();
     cursor();
 
     pitch = map(mouseY, 0, height, 2, 0.5);
@@ -833,6 +837,11 @@ function choirPick() {
         choirBoy2.display();
     }
 
+    for(let z = 0; z < choirRow3.length; z++) {
+        let choirBoy3 = choirRow3[z];
+        choirBoy3.display();
+    }
+
     if(isDragging === true) {
         for(let j = 0; j < choirRow1.length; j++) {
             let choirBoy1 = choirRow1[j];
@@ -847,6 +856,13 @@ function choirPick() {
             choirBoy2.bodyShake();
             choirBoy2.redFace();
         }
+
+        for(let z = 0; z < choirRow3.length; z++) {
+            let choirBoy3 = choirRow3[z];
+            choirBoy3.mouthMove();
+            choirBoy3.bodyShake();
+            choirBoy3.redFace();
+        }
     }
 
     if(isDragging === false) {
@@ -859,13 +875,28 @@ function choirPick() {
             let choirBoy2 = choirRow2[i];
             choirBoy2.return();
         }
+
+        for(let z = 0; z < choirRow3.length; z++) {
+            let choirBoy3 = choirRow3[z];
+            choirBoy3.return();
+        }
     }
+}
+
+
+function displayChoirSound() {
+    noStroke();
+    fill(choirV1Button.fill);
+    ellipse(choirV1Button.x, choirV1Button.y, choirV1Button.size);
+    fill(choirV2Button.fill);
+    ellipse(choirV2Button.x, choirV2Button.y, choirV2Button.size);
+
 }
 
 
 function displayChoirBG() {
     imageMode(CENTER);
-    image(choirBG, width/2, height/2, width, height);
+    image(choirBG, 500, 350, 1000, 700);
 }
 
 
@@ -887,9 +918,10 @@ function thereminPick() {
 function displayLine() {
     stroke(255);
     strokeWeight(5);
+    noFill();
     let mappedAmp = map(theremin.getAmp(), 0, 0.6, width, 0);
     let mappedFreq = map(theremin.getFreq(), 0, 900, height, 0);
-    line(0, mappedAmp, width, mappedFreq);
+    bezier(0, height / 2, width / 3, mappedAmp, (2/3) * width, mappedFreq, width, height / 2);
 }
 
 

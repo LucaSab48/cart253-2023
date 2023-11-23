@@ -38,6 +38,7 @@ class Choir {
     
     display() {
         stroke(0);
+        imageMode(CORNER);
         image(this.bodyImage, this.x - 73, this.y, this.size + 40, this.size + 120);
         noStroke();
         fill(this.fill.r, this.fill.g, this.fill.b);
