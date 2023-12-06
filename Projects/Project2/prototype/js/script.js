@@ -12,6 +12,14 @@ let isDragging;
 
 let dKit;
 
+let drumSong = undefined;
+
+let drumSongPlayed = false;
+
+let drumSongPaused = false;
+
+let songOn = false;
+
 let angle1 = 50;
 
 let clickTime = 0;
@@ -44,7 +52,13 @@ let choirBG = undefined;
 
 let choirRobe = undefined;
 
-let choirHair = undefined;
+let choirClosedEyes = undefined;
+
+let choirOpenEyes = undefined;
+
+let choirHair = [];
+
+let choirHairPick;
 
 let pitch;
 
@@ -52,25 +66,37 @@ let path;
 
 let theremin;
 
+let thereminOn = false;
+
 let amplitude;
 
 let lineY;
 
 let wave = "sine";
 
+let gameCount = 0;
+
+let gameOn = false;
+
+let gameWinSFX = undefined;
+
+let gameSFX = undefined;
+
+let noLoop = false;
+
 let choirV1Button = {
     x: 0,
     y: 0,
     size: 50, 
     fill: 200,
-}
+};
 
 let choirV2Button = {
     x: 0,
     y: 0,
     size: 50, 
     fill: 200,
-}
+};
 
 let thereminBase = {
     x: 0, 
@@ -124,6 +150,27 @@ let sawtoothButton = {
     img: undefined
 };
 
+let thereminCircle = {
+    x: 0, 
+    y: 0, 
+    size: 50, 
+    fill: {
+        r: 255, 
+        g: 0, 
+        b: 0, 
+    minSize: 5,
+    sizeRed: 5
+    }
+};
+
+let thereminHand = {
+    x: 0,
+    y: 0, 
+    width: 120,
+    height: 80,
+    img: undefined
+};
+
 let drumSelect = {
     x: 0, 
     y: 0, 
@@ -136,13 +183,31 @@ let thereminSelect = {
     y: 0, 
     width: 200,
     height: 200
-}
+};
 
 let choirSelect = {
     x: 0, 
     y: 0, 
     width: 200,
     height: 200
+};
+
+let drumSongSelect = {
+    x: 0, 
+    y: 0,
+    width: 60,
+    height: 60,
+    sound: [],
+    img: undefined
+};
+
+let drumPlayButton = {
+    x: 0,
+    y: 0,
+    width: 60,
+    height: 60,
+    fill: 200,
+    img: undefined
 };
 
 let drumStick = {
@@ -245,15 +310,31 @@ function preload () {
     drum4.sound = loadSound("assets/sounds/drum4.mp3");
     cymbal2.sound = loadSound("assets/sounds/cymbal2.mp3");
     bass.sound = loadSound("assets/sounds/bass.mp3");
+    drumSongSelect.sound[0] = loadSound("assets/sounds/jazz1.mp3");
+    drumSongSelect.sound[1] = loadSound("assets/sounds/funk1.mp3");
+    drumSongSelect.sound[2] = loadSound("assets/sounds/rock1.mp3");
+    drumSongSelect.sound[3] = loadSound("assets/sounds/prog1.mp3");
+    drumSongSelect.sound[4] = loadSound("assets/sounds/bossanova1.mp3");
     choirV1 = loadSound("assets/sounds/choir3.mp3");
     choirV2 = loadSound("assets/sounds/choir.v2.mp3");
+    gameSFX = loadSound("assets/sounds/game1.mp3");
+    gameWinSFX = loadSound("assets/sounds/gameWin1.mp3");
+    choirHair[0]= loadImage("assets/images/hair1.png");
+    choirHair[1] = loadImage("assets/images/hair2.png");
+    choirHair[2] = loadImage("assets/images/hair3.png");
+    choirHair[3] = loadImage("assets/images/hair4.png");
     sineButton.img = loadImage("assets/images/sinewave1.png");
     triangleButton.img = loadImage("assets/images/triangleWave1.png");
     squareButton.img = loadImage("assets/images/squarewave1.png");
     sawtoothButton.img = loadImage("assets/images/sawtoothwave1.png");
     drumStick.img = loadImage("assets/images/images/drumstick1.webp");
+    drumSongSelect.img = loadImage("assets/images/playButton1.png");
+    drumPlayButton.img = loadImage("assets/images/stopButton1.png");
+    thereminHand.img = loadImage("assets/images/hand2.png");
     choirBG = loadImage("assets/images/choirBG.jpg");
     choirRobe = loadImage("assets/images/robe2.png");
+    choirClosedEyes = loadImage("assets/images/choir_closedeyes.png");
+    choirOpenEyes = loadImage("assets/images/choir_openEyes.png");
 }
 
 
@@ -264,7 +345,8 @@ function setup() {
     choirV1Button.x = 50;
     choirV1Button.y = height - 50;
     choirV2Button.x = width - 50;
-    choirV2Button.y = height - 50; 
+    choirV2Button.y = height - 50;
+     
     
     drumSelect.x = 150;
     drumSelect.y = height/2;
@@ -302,12 +384,21 @@ function setup() {
     kick.y = height/2 + 120;
     kick.y1 = kick.y;
 
+    drumSongSelect.x = 400;
+    drumSongSelect.y = 630;
+    drumPlayButton.x = 600;
+    drumPlayButton.y = 630;
+
     let x1 = 25;
     let y1 = 150;
     let x2 = 50;
     let y2 = 250;
     let x3 = 75;
     let y3 = 350;
+
+    thereminCircle.x = random(200, 800);
+    thereminCircle.y = random(100, 600);
+
 
     userStartAudio();
     theremin = new p5.Oscillator(0, wave);
@@ -326,25 +417,28 @@ function setup() {
     sawtoothButton.y = thereminBase.y - 35;
 
     for(let i = 0; i < numChoirBoys1; i++) {
-        let choirBoy1 = new Choir(x1, y1, choirRobe);
+        choirHairPick = random(choirHair);
+        let choirBoy1 = new Choir(x1, y1, choirRobe, choirHairPick, choirClosedEyes, choirOpenEyes);
         choirRow1.push(choirBoy1);
         x1 += 50;
     }
 
     for(let j = 0; j < numChoirBoys2; j++) {
-        let choirBoy2 = new Choir(x2, y2, choirRobe);
+        choirHairPick = random(choirHair);
+        let choirBoy2 = new Choir(x2, y2, choirRobe, choirHairPick, choirClosedEyes, choirOpenEyes);
         choirRow2.push(choirBoy2);
         x2 += 50;
     }
 
     for(let z = 0; z < numChoirBoys3; z++) {
-        let choirBoy3 = new Choir(x3, y3, choirRobe);
+        choirHairPick = random(choirHair);
+        let choirBoy3 = new Choir(x3, y3, choirRobe, choirHairPick, choirClosedEyes, choirOpenEyes);
         choirRow3.push(choirBoy3);
         x3 += 50;
     }
+
+    drumSong = random(drumSongSelect.song);
 }
-
-
 
 //In the draw function, I am switching the states of the simulation. 
 function draw() {
@@ -385,10 +479,13 @@ function mousePressed() {
     let d14 = dist(mouseX, mouseY, thereminSelect.x, thereminSelect.y);
     let d15 = dist(mouseX, mouseY, choirV1Button.x, choirV1Button.y);
     let d16 = dist(mouseX, mouseY, choirV2Button.x, choirV2Button.y);
+    let d17 = dist(mouseX, mouseY, drumPlayButton.x, drumPlayButton.y);
+    let d18 = dist(mouseX, mouseY, drumSongSelect.x, drumSongSelect.y);
 
 
     if(state === "theremin") {
         theremin.start();
+        thereminOn = true;
     }
 
     if(d1 < drum1.size / 2 && state === "drum kit") {
@@ -500,11 +597,21 @@ function mousePressed() {
     if(d16 < choirV2Button.size / 2 && state === "choir") {
         choirSound = choirV2;
     }
+
+    
+    if((d18 < drumSongSelect.width / 2 || d18 < drumSongSelect.height / 2) && state === "drum kit") {    
+        drumSongPlayed = true;
+    }
+    
+    if((d17 < drumPlayButton.width / 2 || d17 < drumPlayButton.height / 2) && state === "drum kit") {
+        drumSongPaused = true;
+        songOn = false;
+    } 
+
 }
 
 
 function mouseReleased() {
-
     if(dKit === "drum1") {
         if(drum1.isOn){
             drum1.isOn = false;
@@ -562,8 +669,8 @@ function mouseReleased() {
 
     if(state === "theremin") {
         theremin.stop();
+        thereminOn = false;
     }
-
 }
 
 
@@ -598,12 +705,16 @@ function keyPressed() {
     else if(keyCode === LEFT_ARROW && state === "choir") {
         state = "theremin";
     }
-    else if( keyCode === 32 && state === "choir") {
+    else if(keyCode === 32 && state === "choir") {
         isDragging = true;
         if(!choirSound.isPlaying() && state === "choir") {
                 choirSound.loop();
         }
         
+    }
+    else if(keyCode === 13 && state === "theremin") {
+        gameOn = true;
+        gameCount = 0;
     }
 }
 
@@ -736,6 +847,20 @@ function displayBassKick() {
 }
 
 
+function displaySongSelect() {
+    noStroke();
+    imageMode(CENTER);
+    image(drumSongSelect.img, drumSongSelect.x, drumSongSelect.y, drumSongSelect.width, drumSongSelect.height);
+}
+
+
+function displayDrumPlayButton() {
+    noStroke();
+    imageMode(CENTER);
+    image(drumPlayButton.img, drumPlayButton.x, drumPlayButton.y, drumPlayButton.width, drumPlayButton.height);
+}
+
+
 function displayDrumStick() {
     noCursor();
     drumStick.x = mouseX;
@@ -774,6 +899,7 @@ function displayTheremin() {
     ellipse(sawtoothButton.x + 38, sawtoothButton.y + 35, sawtoothButton.size);
   
     //All the images on the buttons
+    imageMode(CORNER);
     image(sineButton.img, sineButton.x, sineButton.y, sineButton.width, sineButton.height);
     image(triangleButton.img, triangleButton.x, triangleButton.y, triangleButton.width, triangleButton.height);
     image(squareButton.img, squareButton.x, squareButton.y, squareButton.width, squareButton.height);
@@ -811,7 +937,25 @@ function drumKit() {
     displayCymbal1();
     displayCymbal2();
     displayBassKick();
+    displayDrumPlayButton();
+    displaySongSelect();
     displayDrumStick();
+    
+    if(drumSongPlayed && state === "drum kit") { 
+        if(!songOn) {
+            drumSong = random(drumSongSelect.sound);
+            drumSong.play();
+            songOn = true;
+        }
+        drumSongPlayed = false;
+    }
+
+    if(drumSongPaused && state ==="drum kit") {
+        drumSong.stop();
+        songOn = false;
+        drumSongPaused = false; 
+    }
+
 }
 
 //Function that activates when state switches to choir
@@ -826,6 +970,10 @@ function choirPick() {
 
     path = map(mouseX, 0, width, -1.0, 1.0);
     choirSound.pan(path);
+
+    if(songOn) {
+        drumSong.stop();
+    }
 
     for(let j = 0; j < choirRow1.length; j++) {
         let choirBoy1 = choirRow1[j];
@@ -848,6 +996,7 @@ function choirPick() {
             choirBoy1.mouthMove();
             choirBoy1.bodyShake();
             choirBoy1.redFace();
+            choirBoy1.closeEyes();
         }
 
         for(let i = 0; i < choirRow2.length; i++) {
@@ -855,6 +1004,7 @@ function choirPick() {
             choirBoy2.mouthMove();
             choirBoy2.bodyShake();
             choirBoy2.redFace();
+            choirBoy2.closeEyes();
         }
 
         for(let z = 0; z < choirRow3.length; z++) {
@@ -862,6 +1012,7 @@ function choirPick() {
             choirBoy3.mouthMove();
             choirBoy3.bodyShake();
             choirBoy3.redFace();
+            choirBoy3.closeEyes();
         }
     }
 
@@ -906,14 +1057,45 @@ function thereminPick() {
     displayLine();
     displayTheremin();
     displayValues();
+    displayHandTheremin();
+    
+    if(songOn) {
+        drumSong.stop();
+    }
+
     if(mouseY > 0 || mouseY < 700) {
         let newFreq = map(mouseY, height, 0, 0, 900);
         theremin.freq(newFreq);
     }
 
-    let newAmp = map(mouseX, 0, width, 0, 0.6);
-    theremin.amp(newAmp, 0.1);
+    if(mouseX > 0 || mouseX < 1000) {
+        let newAmp = map(mouseX, 0, width, 0, 0.6);
+        theremin.amp(newAmp, 0.1);
+    }
+
+    if(gameOn) {
+        thereminGameDisplay();
+        let d1 = dist(mouseX, mouseY, thereminCircle.x, thereminCircle.y);
+        if(d1 < thereminCircle.size / 2 + thereminHand.width / 3 && gameOn && thereminOn) {
+            thereminCircle.x = random(200, 800);
+            thereminCircle.y = random(100, 600);
+            gameCount += 1;
+            gameSFX.play();
+            noLoop = false;
+        }
+    }
+
+    if(gameCount === 20) {
+        gameOn = false;
+        thereminGameWin();
+        gameWinSFX.setLoop(false);
+        if(!gameWinSFX.isPlaying() && !noLoop) {
+            gameWinSFX.play()
+        }
+        noLoop = true;
+    }
 }
+
 
 function displayLine() {
     stroke(255);
@@ -922,7 +1104,7 @@ function displayLine() {
     let mappedAmp = map(theremin.getAmp(), 0, 0.6, width, 0);
     let mappedFreq = map(theremin.getFreq(), 0, 900, height, 0);
     bezier(0, height / 2, width / 3, mappedAmp, (2/3) * width, mappedFreq, width, height / 2);
-}
+};
 
 
 function displayValues() {
@@ -934,6 +1116,41 @@ function displayValues() {
     text("Amp: " + amp, width / 2, 100);
     text("Frequency: " + frequency, width / 2, 125);
     text("Wave Type: " + wave, width / 2, 150);
+}
+
+
+function displayHandTheremin() {
+    noCursor();
+    thereminHand.x = mouseX;
+    thereminHand.y = mouseY;
+    imageMode(CENTER);
+    image(thereminHand.img, thereminHand.x, thereminHand.y, thereminHand.width, thereminHand.height);
+}
+
+
+function thereminGameDisplay() {
+    push();
+    noStroke();
+    fill(thereminCircle.fill.r, thereminCircle.fill.g, thereminCircle.fill.b);
+    ellipse(thereminCircle.x, thereminCircle.y, thereminCircle.size);
+    pop();
+
+    push();
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(25);
+    text("Score: " + gameCount, width / 2, 175);
+    pop();
+}
+
+
+function thereminGameWin() {
+    push();
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(25);
+    text("YOU WON!", width / 2, 175);
+    pop();
 }
 
 

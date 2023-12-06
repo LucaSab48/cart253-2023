@@ -1,5 +1,5 @@
 class Choir {
-    constructor(x, y, image1) {
+    constructor(x, y, image1, image2, image3, image4) {
         this.x = x;
         this.y = y;
         this.size = 100;
@@ -11,6 +11,10 @@ class Choir {
             b: 153,
         };
         this.bodyImage = image1;
+        this.hairImage = image2;
+        this.closedEyesImage = image3;
+        this.openEyesImage = image4;
+        this.isClosed = false;
         this.minShake = 0;
         this.maxShake = 0.5; 
         this.faceReturn = random(0.1, 0.5);
@@ -35,6 +39,13 @@ class Choir {
             this.fill.b = redness2;
         }
     }
+
+    closeEyes() {
+        this.isClosed = true;
+        imageMode(CENTER);
+        image(this.closedEyesImage, this.headX - 10, this.y, (this.size / 10) + 3, (this.size / 10) - 2);
+        image(this.closedEyesImage, this.headX + 10, this.y, (this.size / 10) + 3, (this.size / 10) - 2);
+    }
     
     display() {
         stroke(0);
@@ -43,15 +54,27 @@ class Choir {
         noStroke();
         fill(this.fill.r, this.fill.g, this.fill.b);
         ellipse(this.headX, this.y, this.size / 2);
-        fill(0);
-        ellipse(this.headX - 12, this.y, this.size / 10 );
-        fill(0);
-        ellipse(this.headX + 12, this.y, this.size / 10);
+        if(!this.isClosed) {
+            imageMode(CENTER);
+            image(this.openEyesImage, this.headX - 10, this.y, (this.size / 10) + 3, (this.size / 10) - 2);
+            image(this.openEyesImage, this.headX + 10, this.y, (this.size / 10) + 3, (this.size / 10) - 2);
+        }
+        else if(this.isClosed) {
+            imageMode(CENTER);
+            image(this.closedEyesImage, this.headX - 10, this.y, (this.size / 10) + 3, (this.size / 10) - 2);
+            image(this.closedEyesImage, this.headX + 10, this.y, (this.size / 10) + 3, (this.size / 10) - 2);
+        }
         fill(0);
         ellipse(this.headX, this.y + 15, this.mouthSize);
+        imageMode(CENTER);
+        image(this.hairImage, this.headX - 5, this.y - 6, this.size - 25, this.size - 45);
     }
 
     return() {
+        this.isClosed = false;
+        imageMode(CENTER);
+        image(this.openEyesImage, this.headX - 10, this.y, (this.size / 10) + 3, (this.size / 10) - 2);
+        image(this.openEyesImage, this.headX + 10, this.y, (this.size / 10) + 3, (this.size / 10) - 2);
         this.headX = this.x;
         if(this.mouthSize > 10) {
             this.mouthSize += -0.1;
