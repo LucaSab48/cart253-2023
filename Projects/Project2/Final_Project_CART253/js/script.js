@@ -6,84 +6,109 @@
 
 "use strict"
 
+//This changes the state of the simulator to the different instruments, title screen and selection menu
 let state = "title";
 
+//This tracks if the user is dragging the mouse
 let isDragging;
 
+//This tracks the state of the drums to stop the sound from repeating
 let dKit;
 
+//This variable stores the random selection of the drum songs
 let drumSong = undefined;
 
+//This allows the program to keep track if a song is being played or not
 let drumSongPlayed = false;
 
+//This allows the program to keep track if the song has been stopped
 let drumSongPaused = false;
 
+//This variable stops the song from being played repeatedly
 let songOn = false;
 
+//The angle variable allows the drum stick to rotate
 let angle1 = 50;
 
-let clickTime = 0;
-
-let selection = 0;
-
-let pan;
-
+//This variable contains the array of choir boys for the top row
 let choirRow1 = [];
 
+//Same thing as before but for the middle row 
 let choirRow2 = [];
 
+//Same thing as before but for the bottom row
 let choirRow3 = [];
 
+//This determines the amount of choir bows for the first row
 let numChoirBoys1 = 20;
 
+//Same thing but for the second row
 let numChoirBoys2 = 19;
 
+//Same thing but for the third row
 let numChoirBoys3 = 18;
 
-let mouthSize = 10;
-
+//This variable contains the one of the choir sounds
 let choirV1 = undefined;
 
+//This variable contains the other choir sound
 let choirV2 = undefined;
 
+//This variable keeps track of the selection for the choir sound
 let choirSound = undefined;
 
+//Contains the background for the choir simulator
 let choirBG = undefined;
 
+//Contains the image of the robe for the choir 
 let choirRobe = undefined;
 
+//Contains image of closed eyes for choir
 let choirClosedEyes = undefined;
 
+//Contains images of open eyes for choir
 let choirOpenEyes = undefined;
 
+//Array of images for choir hair
 let choirHair = [];
 
+//Variable that keeps track of the random selection of hair type for the choir
 let choirHairPick;
 
+//Keeps the map of rate for the choir to change pitch
 let pitch;
 
+//Keeps the map of the pan for the choir
 let path;
 
+//This variable becomes the oscillator for the theremin instrument
 let theremin;
 
+//This keeps track if the theremin is playing or not for the mini-game
 let thereminOn = false;
 
+//This keeps the map of the amplitude for the theremin
 let amplitude;
 
-let lineY;
-
+//This variable keeps track of what wave is selected 
 let wave = "sine";
 
+//This variable keeps track of the count for the theremin game
 let gameCount = 0;
 
+//Checks if the game is currently on
 let gameOn = false;
 
+//Contains the sound effect for winning the game
 let gameWinSFX = undefined;
 
+//Contains the sound effect for touching the circles in the game 
 let gameSFX = undefined;
 
+//Stops the winning sound effect for repeatedly playing 
 let noLoop = false;
 
+//Object of choir song selection button
 let choirV1Button = {
     x: 0,
     y: 0,
@@ -91,6 +116,7 @@ let choirV1Button = {
     fill: 200,
 };
 
+//Same thing as before but for the other song
 let choirV2Button = {
     x: 0,
     y: 0,
@@ -98,6 +124,7 @@ let choirV2Button = {
     fill: 200,
 };
 
+//Object for the base of the theremin
 let thereminBase = {
     x: 0, 
     y: 0, 
@@ -106,6 +133,7 @@ let thereminBase = {
     fill: 175
 };
 
+//Object for the rod of the theremin
 let thereminRod = {
     x: 0, 
     y: 0, 
@@ -114,6 +142,7 @@ let thereminRod = {
     fill: 210
 };
 
+//Object for the sin wave image on the theremin base 
 let sineButton = {
     x: 0, 
     y: 0,
@@ -123,6 +152,7 @@ let sineButton = {
     img: undefined
 };
 
+//Object for the triangle wave image
 let triangleButton = {
     x: 0, 
     y: 0,
@@ -132,6 +162,7 @@ let triangleButton = {
     img: undefined
 };
 
+//Object for the square wave image
 let squareButton = {
     x: 0, 
     y: 0,
@@ -141,6 +172,7 @@ let squareButton = {
     img: undefined
 };
 
+//Object for the sawtooth wave image
 let sawtoothButton = {
     x: 0, 
     y: 0,
@@ -150,6 +182,7 @@ let sawtoothButton = {
     img: undefined
 };
 
+//Object for the button where all the wave images are on 
 let thereminCircle = {
     x: 0, 
     y: 0, 
@@ -163,6 +196,7 @@ let thereminCircle = {
     }
 };
 
+//Object for the hand image in the theremin instrument
 let thereminHand = {
     x: 0,
     y: 0, 
@@ -174,22 +208,25 @@ let thereminHand = {
 let drumSelect = {
     x: 0, 
     y: 0, 
-    width: 200,
-    height: 200
+    width: 250,
+    height: 200,
+    img: undefined
 };
 
 let thereminSelect = {
     x: 0,
     y: 0, 
-    width: 200,
-    height: 200
+    width: 250,
+    height: 200,
+    img: undefined
 };
 
 let choirSelect = {
     x: 0, 
     y: 0, 
-    width: 200,
-    height: 200
+    width: 250,
+    height: 200,
+    img: undefined
 };
 
 let drumSongSelect = {
@@ -319,6 +356,9 @@ function preload () {
     choirV2 = loadSound("assets/sounds/choir.v2.mp3");
     gameSFX = loadSound("assets/sounds/game1.mp3");
     gameWinSFX = loadSound("assets/sounds/gameWin1.mp3");
+    drumSelect.img = loadImage("assets/images/drumKitImage.png");
+    thereminSelect.img = loadImage("assets/images/thereminKit.png");
+    choirSelect.img = loadImage("assets/images/choirKit.png");
     choirHair[0]= loadImage("assets/images/hair1.png");
     choirHair[1] = loadImage("assets/images/hair2.png");
     choirHair[2] = loadImage("assets/images/hair3.png");
@@ -348,13 +388,13 @@ function setup() {
     choirV2Button.y = height - 50;
      
     
-    drumSelect.x = 150;
+    drumSelect.x = width * (1/6);
     drumSelect.y = height/2;
 
-    thereminSelect.x = 500;
+    thereminSelect.x = width / 2;
     thereminSelect.y = height / 2;
 
-    choirSelect.x = 850;
+    choirSelect.x = width * (5/6);
     choirSelect.y = height/2;
 
     choirSound = choirV1;
@@ -730,39 +770,23 @@ function keyReleased() {
 //Displays box to choose drum kit 
 function displayDrumSelection() {
     noStroke();
-    rectMode(CENTER);
-    fill(255, 0, 0);
-    rect(drumSelect.x, drumSelect.y, drumSelect.width, drumSelect.height);
-    fill(0);
-    textAlign(CENTER, CENTER);
-    textSize(30);
-    text("Drums", drumSelect.x, drumSelect.y);
-
+    imageMode(CENTER);
+    image(drumSelect.img, drumSelect.x, drumSelect.y, drumSelect.width, drumSelect.height);
 }
 
 
 function displayThereminSelect() {
     noStroke();
-    rectMode(CENTER);
-    fill(0, 255, 0);
-    rect(thereminSelect.x, thereminSelect.y, thereminSelect.width, thereminSelect.height);
-    fill(0);
-    textAlign(CENTER, CENTER);
-    textSize(30);
-    text("Theremin", thereminSelect.x, thereminSelect.y);
+    imageMode(CENTER);
+    image(thereminSelect.img, thereminSelect.x, thereminSelect.y, thereminSelect.width, thereminSelect.height);
 }
 
 
 //Displays box to choose choir
 function displayChoirSelection() {
     noStroke();
-    rectMode(CENTER);
-    fill(0, 0, 255);
-    rect(choirSelect.x, choirSelect.y, choirSelect.width, choirSelect.height);
-    fill(0);
-    textAlign(CENTER, CENTER);
-    textSize(30);
-    text("Choir", choirSelect.x, choirSelect.y);
+    imageMode(CENTER);
+    image(choirSelect.img, choirSelect.x, choirSelect.y, choirSelect.width, choirSelect.height);
 }
 
 
@@ -923,6 +947,10 @@ function title() {
     textAlign(CENTER, CENTER);
     textSize(100);
     text("Instrument Simulator", width/2, height/2);
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(50);
+    text("Press any key to start", width/2, height/2 + 100);
 }
 
 
